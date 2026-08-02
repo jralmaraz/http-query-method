@@ -527,7 +527,52 @@ app = Flask(__name__)
     <strong>Key insight:</strong> Unlike GET (where the URI is the cache key), QUERY's cache key is <code>SHA-256(method + URI + Content-Type + body)</code>. A proxy must buffer and hash the request body before looking up the cache — this is inherently more expensive than GET cache lookup.
   </div>
 
-  <div class="demo-area">
+  <div class="diagram">
+    <svg id="cache-svg" viewBox="0 0 750 240" xmlns="http://www.w3.org/2000/svg">
+      <!-- Client -->
+      <rect x="10" y="88" width="100" height="48" rx="8" class="node-box client"/>
+      <text x="60" y="109" class="node-lbl">Client</text>
+      <text x="60" y="124" class="node-sub">sends QUERY</text>
+      <!-- Cache -->
+      <rect x="285" y="64" width="130" height="96" rx="8" class="node-box cache"/>
+      <text x="350" y="86" class="node-lbl">Proxy Cache</text>
+      <text x="350" y="101" class="node-sub">computes key:</text>
+      <text x="350" y="114" class="node-sub" style="font-family:monospace;font-size:8px;fill:var(--purple)">sha256(URI+CT+body)</text>
+      <text x="350" y="128" class="node-sub" id="cache-status-lbl">checking...</text>
+      <text x="350" y="143" class="node-sub" id="cache-hit-lbl"></text>
+      <!-- Origin -->
+      <rect x="590" y="88" width="120" height="48" rx="8" class="node-box server"/>
+      <text x="650" y="109" class="node-lbl">Origin</text>
+      <text x="650" y="124" class="node-sub">runs query</text>
+      <!-- Wires -->
+      <line x1="110" y1="112" x2="285" y2="112" class="wire wire-active"/>
+      <line x1="415" y1="112" x2="590" y2="112" class="wire wire-active" id="wire-to-origin"/>
+      <line x1="110" y1="152" x2="590" y2="152" class="wire" stroke="var(--green)" stroke-dasharray="4 3"/>
+      <!-- Packets -->
+      <circle id="cpkt-a" cx="60" cy="112" r="7" fill="var(--blue)" style="visibility:hidden"/>
+      <circle id="cpkt-b" cx="350" cy="112" r="7" fill="var(--purple)" style="visibility:hidden"/>
+      <circle id="cpkt-c" cx="650" cy="112" r="7" fill="var(--green)" style="visibility:hidden"/>
+      <!-- Labels -->
+      <text x="197" y="104" class="pkt-lbl">QUERY + body</text>
+      <text x="503" y="104" class="pkt-lbl" id="forward-lbl">forward</text>
+      <text x="350" y="172" class="pkt-lbl" style="fill:var(--green)" id="resp-lbl">200 OK (X-Cache: MISS)</text>
+      <!-- Step indicator -->
+      <text x="375" y="210" id="cache-step-lbl" class="node-lbl" style="fill:var(--blue);font-size:11px">Click a button to animate</text>
+    </svg>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="animCache('miss')">&#x25B6; Animate MISS flow</button>
+    <button class="btn btn-secondary" onclick="animCache('hit')">&#x26A1; Animate HIT flow</button>
+  </div>
+
+  <div id="cache-vsteps">
+    <div class="vstep" id="cvs1"><div class="vstep-icon">1</div><div>Client sends <code>QUERY /users</code> with body. Proxy reads the full body to compute the cache key: <code>SHA-256(URI + Content-Type + body)</code>.</div></div>
+    <div class="vstep" id="cvs2"><div class="vstep-icon">2</div><div>Cache lookup. On <strong>MISS</strong> the request is forwarded to the origin server. On <strong>HIT</strong> the cached response is returned immediately — no backend call.</div></div>
+    <div class="vstep" id="cvs3"><div class="vstep-icon">3</div><div>Origin processes the query and returns <code>200 OK</code> with <code>Cache-Control: max-age=300</code> and optionally a <code>Content-Location</code> URI for the result set.</div></div>
+    <div class="vstep" id="cvs4"><div class="vstep-icon">4</div><div>Proxy stores the response under the computed key. Second request with <em>same body</em> → <code>X-Cache: HIT</code>, 1ms latency, no origin call. Different body → new MISS.</div></div>
+  </div>
+
+  <div class="demo-area" style="margin-top:24px">
     <div class="demo-title">WASM Cache Demo</div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Enter a query body. Send it twice to see MISS → HIT behaviour.</p>
     <textarea id="cache-query" rows="4">{"filter":"active","dept":"Engineering","limit":10}</textarea>
@@ -767,14 +812,49 @@ app = FastAPI()
   <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Database & Backend Integration</h2>
   <p class="lead">The QUERY method is particularly powerful for database-backed APIs — any query language can be the body: SQL, GraphQL, JSONPath, or a custom DSL. See how different backends expose the QUERY method.</p>
 
-  <div class="demo-area">
+  <div class="diagram">
+    <svg id="db-svg" viewBox="0 0 750 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Client -->
+      <rect x="10" y="84" width="100" height="48" rx="8" class="node-box client"/>
+      <text x="60" y="105" class="node-lbl">Client</text>
+      <text x="60" y="120" class="node-sub">any language</text>
+      <!-- HTTP Layer -->
+      <rect x="220" y="60" width="120" height="96" rx="8" class="node-box server"/>
+      <text x="280" y="82" class="node-lbl">HTTP Server</text>
+      <text x="280" y="97" class="node-sub">pkg/query.Handler</text>
+      <text x="280" y="111" class="node-sub">validates Content-Type</text>
+      <text x="280" y="125" class="node-sub">routes by media type</text>
+      <text x="280" y="139" class="node-sub" id="db-accept-lbl">Accept-Query: …</text>
+      <!-- DB -->
+      <rect x="480" y="60" width="110" height="48" rx="8" class="node-box" style="stroke:var(--orange)"/>
+      <text x="535" y="82" class="node-lbl" id="db-label">PostgreSQL</text>
+      <text x="535" y="97" class="node-sub" id="db-ct-lbl">application/sql</text>
+      <!-- Query DSL box -->
+      <rect x="480" y="128" width="110" height="32" rx="6" style="fill:rgba(167,139,250,.08);stroke:var(--purple);stroke-width:1"/>
+      <text x="535" y="146" class="node-sub" style="fill:var(--purple);font-size:9px" id="db-dsl-lbl">SELECT * FROM users</text>
+      <!-- Wires -->
+      <line x1="110" y1="108" x2="220" y2="108" class="wire wire-active"/>
+      <line x1="340" y1="90" x2="480" y2="90" class="wire wire-active" id="db-wire"/>
+      <line x1="110" y1="148" x2="480" y2="148" class="wire" stroke="var(--green)" stroke-dasharray="4 3"/>
+      <!-- Packets -->
+      <circle id="dbpkt-a" cx="60" cy="108" r="7" fill="var(--blue)" style="visibility:hidden"/>
+      <circle id="dbpkt-b" cx="280" cy="90" r="7" fill="var(--orange)" style="visibility:hidden"/>
+      <!-- Labels -->
+      <text x="165" y="100" class="pkt-lbl">QUERY + body</text>
+      <text x="410" y="82" class="pkt-lbl" id="db-fwd-lbl">read-only query</text>
+      <text x="350" y="165" class="pkt-lbl" style="fill:var(--green)" id="db-resp-lbl">200 OK + JSON results</text>
+      <text x="375" y="200" id="db-step-lbl" class="node-lbl" style="fill:var(--blue);font-size:11px">Click a query type to animate</text>
+    </svg>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="animDB('sql');runDB('sql')">&#x25B6; SQL (PostgreSQL)</button>
+    <button class="btn btn-secondary" onclick="animDB('graphql');runDB('graphql')">GraphQL</button>
+    <button class="btn btn-secondary" onclick="animDB('jsonpath');runDB('jsonpath')">JSONPath / NoSQL</button>
+  </div>
+
+  <div class="demo-area" style="margin-top:16px">
     <div class="demo-title">WASM DB Integration Demo</div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="runDB('sql')">SQL query</button>
-      <button class="btn btn-secondary" onclick="runDB('graphql')">GraphQL</button>
-      <button class="btn btn-secondary" onclick="runDB('jsonpath')">JSONPath</button>
-    </div>
-    <div id="db-result" class="result-box">Select a query type above...</div>
+    <div id="db-result" class="result-box">Click a query type above to run the demo...</div>
   </div>
 
   <div class="card">
@@ -1147,7 +1227,32 @@ function loadPreset(type) {
   document.getElementById('pg-body').value = presets[type] || '{}';
 }
 
-// ── Flow animation ───────────────────────────────────────────────────────────
+// ── Animation helpers ─────────────────────────────────────────────────────────
+function animPkt(pktId, fromX, toX, y, duration, color) {
+  const pkt = document.getElementById(pktId);
+  if (!pkt) return Promise.resolve();
+  return new Promise(resolve => {
+    pkt.setAttribute('cx', fromX);
+    pkt.setAttribute('cy', y);
+    if (color) pkt.setAttribute('fill', color);
+    pkt.style.visibility = 'visible';
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      pkt.setAttribute('cx', fromX + (toX - fromX) * t);
+      if (t < 1) requestAnimationFrame(tick);
+      else { pkt.style.visibility = 'hidden'; resolve(); }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function activateStep(steps, i) {
+  if (i > 0 && steps[i - 1]) steps[i - 1].classList.replace('active', 'pass');
+  if (steps[i]) steps[i].classList.add('active');
+}
+
+// ── Flow animation (Protocol Flow tab) ───────────────────────────────────────
 let flowTimer = null;
 
 function runFlow(type) {
@@ -1179,6 +1284,95 @@ function runFlow(type) {
     }
   }
   next();
+}
+
+// ── Cache animation (Caching tab) ────────────────────────────────────────────
+async function animCache(type) {
+  const steps = document.querySelectorAll('#cache-vsteps .vstep');
+  steps.forEach(s => s.classList.remove('active', 'pass'));
+
+  const isHit = type === 'hit';
+  const statusLbl = document.getElementById('cache-status-lbl');
+  const hitLbl = document.getElementById('cache-hit-lbl');
+  const fwdLbl = document.getElementById('forward-lbl');
+  const respLbl = document.getElementById('resp-lbl');
+  const stepLbl = document.getElementById('cache-step-lbl');
+  const wireToOrigin = document.getElementById('wire-to-origin');
+
+  hitLbl.textContent = '';
+  fwdLbl.textContent = isHit ? '(no forward)' : 'forward';
+  respLbl.textContent = isHit ? '200 OK (X-Cache: HIT, 1ms)' : '200 OK (X-Cache: MISS)';
+  wireToOrigin.style.opacity = isHit ? '0.15' : '1';
+
+  // Step 1
+  activateStep(steps, 0);
+  stepLbl.textContent = 'Client sends QUERY + body';
+  statusLbl.textContent = 'computing key...';
+  await animPkt('cpkt-a', 60, 285, 112, 600, 'var(--blue)');
+
+  // Step 2
+  activateStep(steps, 1);
+  stepLbl.textContent = isHit ? 'Key found in cache — HIT!' : 'Key not in cache — MISS';
+  statusLbl.textContent = isHit ? '✓ cache HIT' : '✗ MISS';
+  hitLbl.textContent = isHit ? 'serve cached' : 'forward to origin';
+  hitLbl.style.fill = isHit ? 'var(--green)' : 'var(--orange)';
+  await new Promise(r => setTimeout(r, 600));
+
+  if (!isHit) {
+    // Step 3 (MISS only) — forward to origin
+    activateStep(steps, 2);
+    stepLbl.textContent = 'MISS: forwarding to origin server';
+    await animPkt('cpkt-b', 350, 590, 112, 600, 'var(--purple)');
+    await new Promise(r => setTimeout(r, 400));
+
+    // Step 4 — cache response
+    activateStep(steps, 3);
+    stepLbl.textContent = 'Response cached, served to client';
+    await animPkt('cpkt-c', 650, 60, 152, 700, 'var(--green)');
+  } else {
+    // Step 3 (HIT) — serve from cache
+    activateStep(steps, 2);
+    stepLbl.textContent = 'Serving from cache (no origin call)';
+    await new Promise(r => setTimeout(r, 300));
+    await animPkt('cpkt-a', 350, 60, 152, 500, 'var(--green)');
+    activateStep(steps, 3);
+    stepLbl.textContent = '✓ X-Cache: HIT — 1ms latency, origin not called';
+  }
+}
+
+// ── DB animation (Database tab) ──────────────────────────────────────────────
+async function animDB(type) {
+  const dbLabel = document.getElementById('db-label');
+  const dbCtLbl = document.getElementById('db-ct-lbl');
+  const dbDslLbl = document.getElementById('db-dsl-lbl');
+  const dbFwdLbl = document.getElementById('db-fwd-lbl');
+  const dbAcceptLbl = document.getElementById('db-accept-lbl');
+  const dbStepLbl = document.getElementById('db-step-lbl');
+  const dbRespLbl = document.getElementById('db-resp-lbl');
+
+  const configs = {
+    sql:       { db: 'PostgreSQL',   ct: 'application/sql',      dsl: 'SELECT * FROM users …', fwd: 'read-only txn', accept: 'Accept-Query: application/sql' },
+    graphql:   { db: 'GraphQL API',  ct: 'application/graphql',  dsl: '{ users(filter: …) }',  fwd: 'resolver call', accept: 'Accept-Query: application/graphql' },
+    jsonpath:  { db: 'MongoDB',      ct: 'application/json',     dsl: '$.users[?(@.active)]',  fwd: 'find() cursor',  accept: 'Accept-Query: application/json' },
+  };
+  const c = configs[type] || configs.sql;
+
+  dbLabel.textContent = c.db;
+  dbCtLbl.textContent = c.ct;
+  dbDslLbl.textContent = c.dsl;
+  dbFwdLbl.textContent = c.fwd;
+  dbAcceptLbl.textContent = c.accept;
+  dbRespLbl.textContent = '200 OK + JSON results';
+  dbStepLbl.textContent = 'Client sends QUERY with ' + c.ct;
+
+  await animPkt('dbpkt-a', 60, 220, 108, 550, 'var(--blue)');
+  dbStepLbl.textContent = 'Handler validates Content-Type, routes to ' + c.db;
+  await new Promise(r => setTimeout(r, 400));
+  await animPkt('dbpkt-b', 280, 480, 90, 550, 'var(--orange)');
+  dbStepLbl.textContent = c.db + ' executes ' + c.fwd + ' — read-only, safe';
+  await new Promise(r => setTimeout(r, 500));
+  dbRespLbl.textContent = '200 OK — JSON results returned';
+  dbStepLbl.textContent = '✓ Results returned to client — response is cacheable';
 }
 </script>
 </body>
