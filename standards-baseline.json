@@ -1,0 +1,68 @@
+{
+  "standards": [
+    {
+      "id": "rfc10008",
+      "name": "RFC 10008 — The HTTP QUERY Method",
+      "datatracker_id": "rfc10008",
+      "last_known_rev": "RFC",
+      "implemented_rev": "RFC",
+      "type": "rfc",
+      "source_repo": "https://github.com/nicowillis/draft-httpbis-safe-method-w-body",
+      "status": "published",
+      "poc_status": "implemented",
+      "notes": "Core RFC implemented in pkg/query and pkg/cache. Published October 2024."
+    },
+    {
+      "id": "rfc9110",
+      "name": "RFC 9110 — HTTP Semantics",
+      "datatracker_id": "rfc9110",
+      "last_known_rev": "RFC",
+      "implemented_rev": "RFC",
+      "type": "rfc",
+      "source_repo": null,
+      "status": "published",
+      "poc_status": "implemented",
+      "notes": "HTTP semantics foundation used in pkg/query (405 Allow header, method semantics)."
+    },
+    {
+      "id": "rfc7234",
+      "name": "RFC 7234 — HTTP/1.1 Caching",
+      "datatracker_id": "rfc7234",
+      "last_known_rev": "RFC",
+      "implemented_rev": "RFC",
+      "type": "rfc",
+      "source_repo": null,
+      "status": "published",
+      "poc_status": "implemented",
+      "notes": "Cache semantics implemented in pkg/cache (TTL, X-Cache, no-transform awareness)."
+    },
+    {
+      "id": "rfc8288",
+      "name": "RFC 8288 — Web Linking (Content-Location semantics)",
+      "datatracker_id": "rfc8288",
+      "last_known_rev": "RFC",
+      "implemented_rev": null,
+      "type": "rfc",
+      "source_repo": null,
+      "status": "published",
+      "poc_status": "monitoring",
+      "notes": "Content-Location and Location header semantics referenced in RFC 10008 §2.3 and §2.4. Not yet implemented as a separate package."
+    },
+    {
+      "id": "rfc7807",
+      "name": "RFC 7807 — Problem Details for HTTP APIs",
+      "datatracker_id": "rfc7807",
+      "last_known_rev": "RFC",
+      "implemented_rev": null,
+      "type": "rfc",
+      "source_repo": null,
+      "status": "published",
+      "poc_status": "monitoring",
+      "notes": "Error responses in pkg/query could adopt application/problem+json format. Currently plain text."
+    }
+  ],
+  "wg_feeds": [
+    "https://datatracker.ietf.org/group/httpbis/documents/feed/"
+  ],
+  "last_checked": "2026-08-02"
+}

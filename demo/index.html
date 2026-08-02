@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTP QUERY Method — RFC 10008 Interactive Demo</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --card: #20232f;
+      --border: #2e3145;
+      --blue: #4f8ef7;
+      --green: #3ecf8e;
+      --orange: #f5a623;
+      --red: #e05252;
+      --purple: #a78bfa;
+      --muted: #6b7280;
+      --text: #e2e8f0;
+      --text-dim: #9ca3af;
+      --code-bg: #13151f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    /* ── Header ── */
+    .site-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-badge { background: var(--blue); color: #fff; font-weight: 900; font-size: 11px; padding: 3px 8px; border-radius: 4px; letter-spacing: 1px; }
+    .site-title { font-size: 16px; font-weight: 700; }
+    .site-sub { font-size: 11px; color: var(--muted); }
+    .status-pill { background: rgba(62,207,142,.12); color: var(--green); border: 1px solid rgba(62,207,142,.3); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+
+    /* ── Nav tabs ── */
+    .tab-nav { display: flex; gap: 0; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .tab-btn { padding: 12px 22px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; white-space: nowrap; transition: color .15s, border-color .15s; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* ── Layout ── */
+    .tab-content { display: none; max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+    .tab-content.active { display: block; }
+
+    /* ── Cards ── */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+    .card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 16px; }
+
+    /* ── Hero ── */
+    .hero { text-align: center; padding: 48px 24px 32px; }
+    .hero h1 { font-size: 36px; font-weight: 900; background: linear-gradient(135deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: 15px; color: var(--text-dim); margin-top: 12px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .hero-badges { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    .badge { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+    .badge-blue { background: rgba(79,142,247,.15); color: var(--blue); border: 1px solid rgba(79,142,247,.3); }
+    .badge-green { background: rgba(62,207,142,.12); color: var(--green); border: 1px solid rgba(62,207,142,.25); }
+    .badge-orange { background: rgba(245,166,35,.12); color: var(--orange); border: 1px solid rgba(245,166,35,.25); }
+    .badge-purple { background: rgba(167,139,250,.12); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+
+    /* ── Info grid ── */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .info-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .info-box.green { border-color: rgba(62,207,142,.3); background: rgba(62,207,142,.05); }
+    .info-box.blue { border-color: rgba(79,142,247,.3); background: rgba(79,142,247,.05); }
+    .info-box.orange { border-color: rgba(245,166,35,.3); background: rgba(245,166,35,.05); }
+    .info-box.red { border-color: rgba(224,82,82,.3); background: rgba(224,82,82,.05); }
+    .info-box.purple { border-color: rgba(167,139,250,.3); background: rgba(167,139,250,.05); }
+    .ibt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 8px; }
+    .ibv { font-size: 13px; line-height: 1.7; }
+    .ibv code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+    /* ── Callout ── */
+    .callout { background: rgba(79,142,247,.08); border-left: 3px solid var(--blue); border-radius: 0 6px 6px 0; padding: 14px 18px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.7; }
+    .callout.ok { border-color: var(--green); background: rgba(62,207,142,.07); }
+    .callout.warn { border-color: var(--orange); background: rgba(245,166,35,.07); }
+    .callout.danger { border-color: var(--red); background: rgba(224,82,82,.07); }
+
+    /* ── Code blocks ── */
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12.5px; line-height: 1.7; overflow-x: auto; white-space: pre; tab-size: 2; }
+    code { font-family: inherit; }
+    .kw { color: var(--purple); }
+    .str { color: var(--green); }
+    .cm { color: var(--muted); font-style: italic; }
+    .fn { color: var(--blue); }
+    .nm { color: var(--orange); }
+
+    /* ── Language switcher ── */
+    .lang-switcher { display: flex; gap: 2px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px 8px 0 0; padding: 8px 12px; border-bottom: none; overflow-x: auto; }
+    .lang-btn { font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; padding: 4px 12px; border-radius: 4px; white-space: nowrap; transition: color .15s, background .15s; }
+    .lang-btn:hover { color: var(--text); background: rgba(255,255,255,.06); }
+    .lang-btn.active { color: var(--text); background: rgba(255,255,255,.1); }
+    .lang-panel { display: none; }
+    .lang-panel.active { display: block; }
+    .code-wrapper { border-radius: 0 0 8px 8px; margin-bottom: 24px; }
+
+    /* ── SVG Animation ── */
+    .diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 24px; overflow: hidden; }
+    .node-box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+    .node-box.client { stroke: var(--blue); }
+    .node-box.server { stroke: var(--green); }
+    .node-box.cache { stroke: var(--purple); }
+    .node-box.bad { stroke: var(--red); fill: rgba(224,82,82,.08); }
+    .node-lbl { text-anchor: middle; font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 600; fill: var(--text); }
+    .node-sub { text-anchor: middle; font-family: -apple-system, sans-serif; font-size: 9px; fill: var(--muted); }
+    .wire { stroke: var(--border); stroke-width: 1.5; fill: none; }
+    .wire-active { stroke: var(--blue); stroke-width: 2; fill: none; stroke-dasharray: 4 3; }
+    .pkt-lbl { text-anchor: middle; font-family: monospace; font-size: 9px; fill: var(--text-dim); }
+    .anim-pkt { r: 7; }
+
+    /* ── Interactive demo ── */
+    .demo-area { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+    .demo-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); margin-bottom: 16px; }
+    textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.6; resize: vertical; min-height: 120px; outline: none; }
+    textarea:focus { border-color: var(--blue); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: opacity .15s; }
+    .btn:hover { opacity: .85; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-green { background: var(--green); color: #0f1117; }
+    .btn-row { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+    .result-box { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; min-height: 80px; white-space: pre-wrap; word-break: break-all; }
+    .result-box.ok { border-color: rgba(62,207,142,.4); }
+    .result-box.error { border-color: rgba(224,82,82,.4); }
+
+    /* ── Comparison table ── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .compare-table th { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; background: var(--code-bg); }
+    .compare-table td { padding: 11px 14px; border-bottom: 1px solid rgba(46,49,69,.5); vertical-align: top; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .yes { color: var(--green); font-weight: 700; }
+    .no { color: var(--red); font-weight: 700; }
+    .na { color: var(--muted); }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+    .tag-impl { background: rgba(62,207,142,.15); color: var(--green); }
+    .tag-monitor { background: rgba(107,114,128,.15); color: var(--muted); }
+    .tag-na { background: rgba(224,82,82,.1); color: var(--red); }
+
+    /* ── Lifecycle legend ── */
+    .lifecycle-bar { display: flex; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 16px; }
+    .lc-step { flex: 1; padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 700; letter-spacing: .3px; cursor: help; }
+    .lc-individual { background: rgba(107,114,128,.15); color: var(--muted); }
+    .lc-wg-draft { background: rgba(245,166,35,.15); color: var(--orange); }
+    .lc-lc { background: rgba(79,142,247,.15); color: var(--blue); }
+    .lc-rfc { background: rgba(62,207,142,.15); color: var(--green); }
+    .lc-active { border: 2px solid currentColor; }
+
+    /* ── Vstep animations ── */
+    .vstep { display: flex; gap: 12px; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 8px; opacity: .45; transition: opacity .3s, border-color .3s; font-size: 13px; line-height: 1.6; }
+    .vstep.active { opacity: 1; border-color: var(--blue); background: rgba(79,142,247,.06); }
+    .vstep.pass { opacity: 1; border-color: rgba(62,207,142,.4); background: rgba(62,207,142,.05); }
+    .vstep-icon { font-size: 18px; font-weight: 900; color: var(--blue); min-width: 24px; text-align: center; }
+    .vstep.pass .vstep-icon { color: var(--green); }
+
+    /* ── Wasm status ── */
+    #wasm-status { position: fixed; bottom: 16px; right: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 11px; color: var(--muted); transition: opacity .5s; }
+    #wasm-status.ready { color: var(--green); border-color: rgba(62,207,142,.3); }
+
+    /* ── Spec ref strip ── */
+    .spec-ref { font-size: 11.5px; color: var(--muted); margin-bottom: 20px; padding: 10px 14px; background: var(--code-bg); border-radius: 6px; border: 1px solid var(--border); }
+    .spec-ref a { color: var(--blue); text-decoration: none; }
+    .spec-ref a:hover { text-decoration: underline; }
+
+    /* ── Lead ── */
+    .lead { font-size: 15px; line-height: 1.75; color: var(--text-dim); margin-bottom: 24px; }
+    .lead strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">
+    <span class="logo-badge">RFC 10008</span>
+    <div>
+      <div class="site-title">HTTP QUERY Method</div>
+      <div class="site-sub">Interactive demo — published Oct 2024</div>
+    </div>
+  </div>
+  <span class="status-pill">&#x2713; Published RFC</span>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+  <button class="tab-btn" onclick="showTab('protocol')">Protocol Flow</button>
+  <button class="tab-btn" onclick="showTab('compare')">vs GET &amp; POST</button>
+  <button class="tab-btn" onclick="showTab('caching')">Caching</button>
+  <button class="tab-btn" onclick="showTab('errors')">Error Matrix</button>
+  <button class="tab-btn" onclick="showTab('database')">DB Integration</button>
+  <button class="tab-btn" onclick="showTab('playground')">Playground</button>
+  <button class="tab-btn" onclick="showTab('standards')">Standards</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Overview
+═══════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-overview">
+  <div class="hero">
+    <h1>HTTP QUERY Method</h1>
+    <p class="hero-sub">A new HTTP verb for safe, idempotent, <em>cacheable</em> queries with a request body. Closes the gap between GET and POST for complex search APIs.</p>
+    <div class="hero-badges">
+      <span class="badge badge-green">&#x2713; Safe</span>
+      <span class="badge badge-green">&#x2713; Idempotent</span>
+      <span class="badge badge-green">&#x2713; Cacheable</span>
+      <span class="badge badge-blue">&#x2713; Body allowed</span>
+      <span class="badge badge-orange">&#x26A0; CORS preflight required</span>
+    </div>
+  </div>
+
+  <div class="spec-ref">
+    RFC: <a href="https://www.rfc-editor.org/rfc/rfc10008" target="_blank">RFC 10008 — The HTTP QUERY Method</a> &nbsp;·&nbsp; Published: October 2024 &nbsp;·&nbsp; Authors: J. Reschke, A. Malhotra, J. Snell
+  </div>
+
+  <p class="lead">
+    <strong>The problem:</strong> GET is safe and cacheable but can't carry a body. POST can carry a body but is not safe (caches treat it as state-mutating). For complex search APIs, this forces developers to either stuff queries into URIs (brittle, length-limited, logged in cleartext) or use POST with search semantics (un-cacheable, semantically wrong).
+  </p>
+
+  <div class="info-grid">
+    <div class="info-box green">
+      <div class="ibt">Safe</div>
+      <div class="ibv">Does not change server state. Caches, proxies, and retry logic treat it like GET — safe to replay automatically.</div>
+    </div>
+    <div class="info-box blue">
+      <div class="ibt">Body carries the query</div>
+      <div class="ibv">Any format: <code>application/json</code>, <code>application/sql</code>, <code>application/graphql</code>, <code>application/x-www-form-urlencoded</code>, custom DSLs.</div>
+    </div>
+    <div class="info-box green">
+      <div class="ibt">Cacheable</div>
+      <div class="ibv">RFC 10008 §2.2: responses are cacheable. Cache key = URI + Content-Type + SHA-256(body). Shared proxies can cache search results.</div>
+    </div>
+    <div class="info-box purple">
+      <div class="ibt">Content-Location</div>
+      <div class="ibv">Server can return a <code>Content-Location</code> URI so clients can later GET the same results without resending the body.</div>
+    </div>
+    <div class="info-box orange">
+      <div class="ibt">Accept-Query</div>
+      <div class="ibv">New header (§3): server advertises which query formats it accepts. Returned on 415 responses so clients can adapt.</div>
+    </div>
+    <div class="info-box blue">
+      <div class="ibt">Idempotent</div>
+      <div class="ibv">Identical QUERY requests MUST produce identical results. Retry on timeout is safe — no risk of duplicate side effects.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>This demo</strong> runs a real Go implementation compiled to WebAssembly. The <code>pkg/query</code> package implements RFC 10008 QUERY handling including Content-Type validation, 415 + Accept-Query negotiation, and 422 for malformed query bodies. The cache demo uses <code>pkg/cache</code> with a SHA-256 body-keyed store.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Quick comparison</div>
+    <table class="compare-table">
+      <tr>
+        <th>Property</th>
+        <th>GET</th>
+        <th>QUERY</th>
+        <th>POST (search)</th>
+      </tr>
+      <tr>
+        <td>Safe (no state change)</td>
+        <td class="yes">Yes</td>
+        <td class="yes">Yes</td>
+        <td class="no">No</td>
+      </tr>
+      <tr>
+        <td>Idempotent</td>
+        <td class="yes">Yes</td>
+        <td class="yes">Yes</td>
+        <td class="no">No</td>
+      </tr>
+      <tr>
+        <td>Cacheable by default</td>
+        <td class="yes">Yes</td>
+        <td class="yes">Yes</td>
+        <td class="no">No</td>
+      </tr>
+      <tr>
+        <td>Carries a request body</td>
+        <td class="na">Undefined</td>
+        <td class="yes">Yes</td>
+        <td class="yes">Yes</td>
+      </tr>
+      <tr>
+        <td>Query in URI</td>
+        <td class="yes">Required</td>
+        <td class="na">Optional</td>
+        <td class="no">No</td>
+      </tr>
+      <tr>
+        <td>Accept-Query negotiation</td>
+        <td class="no">No</td>
+        <td class="yes">Yes</td>
+        <td class="no">No</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Protocol Flow
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-protocol">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Protocol Flow</h2>
+  <p class="lead">A QUERY request flows through client → (optional proxy cache) → origin server. The animation shows all three paths: cache miss, cache hit, and the Accept-Query negotiation on unsupported formats.</p>
+
+  <div class="diagram">
+    <svg id="flow-svg" viewBox="0 0 750 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Client -->
+      <rect x="10" y="80" width="110" height="52" rx="8" class="node-box client"/>
+      <text x="65" y="102" class="node-lbl">Client</text>
+      <text x="65" y="117" class="node-sub">application</text>
+      <!-- Cache -->
+      <rect x="290" y="80" width="110" height="52" rx="8" class="node-box cache"/>
+      <text x="345" y="102" class="node-lbl">Proxy Cache</text>
+      <text x="345" y="117" class="node-sub">RFC 7234 + 10008</text>
+      <!-- Server -->
+      <rect x="570" y="80" width="120" height="52" rx="8" class="node-box server"/>
+      <text x="630" y="102" class="node-lbl">Origin Server</text>
+      <text x="630" y="117" class="node-sub">QUERY handler</text>
+      <!-- Wires -->
+      <line x1="120" y1="106" x2="290" y2="106" class="wire wire-active" id="wire-1"/>
+      <line x1="400" y1="106" x2="570" y2="106" class="wire wire-active" id="wire-2"/>
+      <!-- Packets -->
+      <circle id="pkt-a" cx="65" cy="106" r="7" fill="var(--blue)" style="visibility:hidden"/>
+      <circle id="pkt-b" cx="345" cy="106" r="7" fill="var(--purple)" style="visibility:hidden"/>
+      <text x="205" y="98" class="pkt-lbl" id="label-req">QUERY /users</text>
+      <text x="205" y="123" class="pkt-lbl" id="label-body">{filter, limit}</text>
+      <text x="485" y="98" class="pkt-lbl" id="label-fwd">forward or cache</text>
+      <!-- Result arrow -->
+      <line x1="120" y1="140" x2="570" y2="140" class="wire" id="wire-resp" stroke-dasharray="4 3" stroke="var(--muted)"/>
+      <text x="350" y="157" class="pkt-lbl" id="label-resp" style="fill:var(--green)">200 OK + results</text>
+      <!-- Step labels -->
+      <text x="375" y="30" id="flow-step" class="node-lbl" style="fill:var(--blue);font-size:11px">Click "Run Flow" to animate</text>
+    </svg>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="runFlow('miss')">&#x25B6; Cache MISS flow</button>
+    <button class="btn btn-secondary" onclick="runFlow('hit')">&#x26A1; Cache HIT flow</button>
+    <button class="btn btn-secondary" onclick="runFlow('415')">&#x26A0; 415 Negotiate</button>
+  </div>
+
+  <div id="flow-steps">
+    <div class="vstep" id="fs1"><div class="vstep-icon">1</div><div>Client sends <code>QUERY /users HTTP/1.1</code> with <code>Content-Type: application/json</code> and a query body.</div></div>
+    <div class="vstep" id="fs2"><div class="vstep-icon">2</div><div>Proxy cache computes <strong>cache key = SHA-256(URI + Content-Type + body)</strong>. On MISS, forwards to origin with the full body intact.</div></div>
+    <div class="vstep" id="fs3"><div class="vstep-icon">3</div><div>Origin validates <code>Content-Type</code> is present and supported. Runs the query. Returns <code>200 OK</code> with <code>Content-Location</code> URI for the result set.</div></div>
+    <div class="vstep" id="fs4"><div class="vstep-icon">4</div><div>Proxy caches the response under the computed key. Client and proxy both receive <code>X-Cache: MISS</code>. Next identical QUERY → <code>X-Cache: HIT</code>, no backend call.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: vs GET & POST
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-compare">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">QUERY vs GET vs POST</h2>
+  <p class="lead">See exactly how the same complex query looks in each HTTP method — and why QUERY is the right choice for search APIs.</p>
+
+  <div class="demo-area">
+    <div class="demo-title">Live Comparison</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runCompare()">&#x25B6; Compare methods</button>
+    </div>
+    <div id="compare-result" class="result-box">Click "Compare methods" to run the WASM comparison...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Code examples — same query, three methods</div>
+    <div class="lang-switcher" id="ls-compare">
+      <button class="lang-btn active" onclick="switchLang('compare','curl')">curl</button>
+      <button class="lang-btn" onclick="switchLang('compare','go')">Go</button>
+      <button class="lang-btn" onclick="switchLang('compare','js')">JavaScript</button>
+      <button class="lang-btn" onclick="switchLang('compare','python')">Python</button>
+      <button class="lang-btn" onclick="switchLang('compare','rust')">Rust</button>
+    </div>
+    <div class="code-wrapper">
+      <div class="lang-panel active" id="compare-curl">
+<pre><span class="cm"># ─── GET (query in URI — breaks at ~2000 chars) ───────────────────</span>
+curl <span class="str">-G "https://api.example.com/users"</span> \
+  --data-urlencode <span class="str">'filter={"status":"active","dept":["Engineering"]}'</span> \
+  --data-urlencode <span class="str">'sort=name:asc'</span> \
+  --data-urlencode <span class="str">'limit=50'</span>
+
+<span class="cm"># ─── POST (not safe, not cacheable) ───────────────────────────────</span>
+curl <span class="str">-X POST "https://api.example.com/users/search"</span> \
+  <span class="str">-H "Content-Type: application/json"</span> \
+  <span class="str">-d '{"filter":{"status":"active","dept":["Engineering"]},"sort":[{"field":"name","dir":"asc"}],"limit":50}'</span>
+
+<span class="cm"># ─── QUERY (safe + cacheable + body) ──────────────────────────────</span>
+curl <span class="str">-X QUERY "https://api.example.com/users"</span> \
+  <span class="str">-H "Content-Type: application/json"</span> \
+  <span class="str">-H "Accept: application/json"</span> \
+  <span class="str">-d '{"filter":{"status":"active","dept":["Engineering"]},"sort":[{"field":"name","dir":"asc"}],"limit":50}'</span></pre>
+      </div>
+      <div class="lang-panel" id="compare-go">
+<pre><span class="kw">package</span> <span class="nm">main</span>
+
+<span class="kw">import</span> (
+  <span class="str">"bytes"</span>
+  <span class="str">"encoding/json"</span>
+  <span class="str">"net/http"</span>
+)
+
+<span class="kw">func</span> <span class="fn">queryUsers</span>(client *http.Client, baseURL <span class="kw">string</span>) (*http.Response, <span class="kw">error</span>) {
+  body, _ := json.Marshal(map[<span class="kw">string</span>]<span class="kw">interface</span>{}{
+    <span class="str">"filter"</span>: map[<span class="kw">string</span>]<span class="kw">interface</span>{}{
+      <span class="str">"status"</span>: <span class="str">"active"</span>,
+      <span class="str">"dept"</span>:   []<span class="kw">string</span>{<span class="str">"Engineering"</span>},
+    },
+    <span class="str">"sort"</span>:  []map[<span class="kw">string</span>]<span class="kw">string</span>{{<span class="str">"field"</span>: <span class="str">"name"</span>, <span class="str">"dir"</span>: <span class="str">"asc"</span>}},
+    <span class="str">"limit"</span>: <span class="nm">50</span>,
+  })
+
+  req, _ := http.NewRequest(<span class="str">"QUERY"</span>, baseURL+<span class="str">"/users"</span>, bytes.NewReader(body))
+  req.Header.Set(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>)
+  req.Header.Set(<span class="str">"Accept"</span>, <span class="str">"application/json"</span>)
+
+  <span class="cm">// QUERY is safe + idempotent — the client can retry on timeout</span>
+  <span class="kw">return</span> client.Do(req)
+}
+
+<span class="cm">// Server handler (uses pkg/query from this project)</span>
+<span class="kw">import</span> <span class="str">"github.com/jralmaraz/http-query-method/pkg/query"</span>
+
+handler := query.JSONQueryHandler(<span class="kw">func</span>(q map[<span class="kw">string</span>]<span class="kw">interface</span>{}) (<span class="kw">interface</span>{}, <span class="kw">error</span>) {
+  results := db.Query(q[<span class="str">"filter"</span>], q[<span class="str">"sort"</span>], q[<span class="str">"limit"</span>])
+  <span class="kw">return</span> map[<span class="kw">string</span>]<span class="kw">interface</span>{}{<span class="str">"results"</span>: results}, <span class="kw">nil</span>
+})</pre>
+      </div>
+      <div class="lang-panel" id="compare-js">
+<pre><span class="cm">// ─── Browser / Node.js (fetch API) ───────────────────────────────</span>
+<span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/users'</span>, {
+  method: <span class="str">'QUERY'</span>,         <span class="cm">// RFC 10008 method</span>
+  headers: {
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+    <span class="str">'Accept'</span>:       <span class="str">'application/json'</span>,
+  },
+  body: JSON.stringify({
+    filter: { status: <span class="str">'active'</span>, dept: [<span class="str">'Engineering'</span>] },
+    sort:   [{ field: <span class="str">'name'</span>, dir: <span class="str">'asc'</span> }],
+    limit:  <span class="nm">50</span>,
+  }),
+  <span class="cm">// Note: QUERY is not a CORS-safelisted method — preflight will fire</span>
+});
+
+<span class="kw">const</span> data = <span class="kw">await</span> response.json();
+console.<span class="fn">log</span>(<span class="str">`Cache: ${response.headers.get('X-Cache')}`</span>);      <span class="cm">// MISS or HIT</span>
+console.<span class="fn">log</span>(<span class="str">`Results URI: ${response.headers.get('Content-Location')}`</span>);
+
+<span class="cm">// ─── Node.js with undici (explicit QUERY support) ─────────────────</span>
+<span class="kw">import</span> { fetch } <span class="kw">from</span> <span class="str">'undici'</span>;   <span class="cm">// undici allows custom methods</span>
+<span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, { method: <span class="str">'QUERY'</span>, body, headers });</pre>
+      </div>
+      <div class="lang-panel" id="compare-python">
+<pre><span class="kw">import</span> httpx  <span class="cm"># httpx supports custom methods natively</span>
+
+query_body = {
+    <span class="str">"filter"</span>: {<span class="str">"status"</span>: <span class="str">"active"</span>, <span class="str">"dept"</span>: [<span class="str">"Engineering"</span>]},
+    <span class="str">"sort"</span>:   [{<span class="str">"field"</span>: <span class="str">"name"</span>, <span class="str">"dir"</span>: <span class="str">"asc"</span>}],
+    <span class="str">"limit"</span>: <span class="nm">50</span>,
+}
+
+<span class="cm"># httpx allows any HTTP method string</span>
+response = httpx.request(
+    method=<span class="str">"QUERY"</span>,
+    url=<span class="str">"https://api.example.com/users"</span>,
+    json=query_body,
+    headers={<span class="str">"Accept"</span>: <span class="str">"application/json"</span>},
+)
+
+data = response.json()
+print(<span class="fn">f</span><span class="str">"Cache: {response.headers.get('X-Cache')}"</span>)          <span class="cm"># MISS or HIT</span>
+print(<span class="fn">f</span><span class="str">"Results: {data['results']}"</span>)
+
+<span class="cm"># Flask server handler</span>
+<span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+
+app = Flask(__name__)
+
+<span class="kw">@app</span>.route(<span class="str">'/users'</span>, methods=[<span class="str">'QUERY'</span>])
+<span class="kw">def</span> <span class="fn">query_users</span>():
+    query = request.get_json()
+    <span class="kw">if not</span> query:
+        <span class="kw">return</span> jsonify(error=<span class="str">"Content-Type required"</span>), <span class="nm">400</span>
+    results = db.<span class="fn">search</span>(query[<span class="str">"filter"</span>], query.get(<span class="str">"limit"</span>, <span class="nm">20</span>))
+    <span class="kw">return</span> <span class="fn">jsonify</span>(results=results)</pre>
+      </div>
+      <div class="lang-panel" id="compare-rust">
+<pre><span class="kw">use</span> reqwest::Method;
+
+<span class="cm">// reqwest supports custom methods via Method::from_bytes</span>
+<span class="kw">let</span> query_method = Method::from_bytes(<span class="str">b"QUERY"</span>).unwrap();
+
+<span class="kw">let</span> body = serde_json::json!({
+    <span class="str">"filter"</span>: {<span class="str">"status"</span>: <span class="str">"active"</span>, <span class="str">"dept"</span>: [<span class="str">"Engineering"</span>]},
+    <span class="str">"sort"</span>:   [{<span class="str">"field"</span>: <span class="str">"name"</span>, <span class="str">"dir"</span>: <span class="str">"asc"</span>}],
+    <span class="str">"limit"</span>: <span class="nm">50</span>,
+});
+
+<span class="kw">let</span> response = client
+    .request(query_method, <span class="str">"https://api.example.com/users"</span>)
+    .header(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>)
+    .header(<span class="str">"Accept"</span>,       <span class="str">"application/json"</span>)
+    .json(&body)
+    .send()
+    .<span class="kw">await</span>?;
+
+<span class="cm">// Axum server handler</span>
+<span class="kw">use</span> axum::{routing::method_routing, Router, Json, http::StatusCode};
+
+<span class="kw">async fn</span> <span class="fn">query_users</span>(Json(q): Json&lt;serde_json::Value&gt;) -&gt; Json&lt;serde_json::Value&gt; {
+    <span class="kw">let</span> results = db.<span class="fn">search</span>(&q).<span class="kw">await</span>;
+    Json(serde_json::json!({<span class="str">"results"</span>: results}))
+}
+
+<span class="kw">let</span> app = Router::new()
+    .route(<span class="str">"/users"</span>, method_routing::on(MethodFilter::try_from(<span class="str">"QUERY"</span>).unwrap(), query_users));</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Caching
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-caching">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Caching Semantics</h2>
+  <p class="lead">RFC 10008 §2.2 defines how QUERY responses are cached. The cache key incorporates the full request body, making QUERY unique among cacheable methods.</p>
+
+  <div class="callout">
+    <strong>Key insight:</strong> Unlike GET (where the URI is the cache key), QUERY's cache key is <code>SHA-256(method + URI + Content-Type + body)</code>. A proxy must buffer and hash the request body before looking up the cache — this is inherently more expensive than GET cache lookup.
+  </div>
+
+  <div class="demo-area">
+    <div class="demo-title">WASM Cache Demo</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Enter a query body. Send it twice to see MISS → HIT behaviour.</p>
+    <textarea id="cache-query" rows="4">{"filter":"active","dept":"Engineering","limit":10}</textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runCacheDemo()">&#x25B6; Simulate MISS → HIT</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('cache-query').value='{}';runCacheDemo()">Reset body</button>
+    </div>
+    <div id="cache-result" class="result-box">Run the demo to see caching in action...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cache implementation — code examples</div>
+    <div class="lang-switcher" id="ls-cache">
+      <button class="lang-btn active" onclick="switchLang('cache','go')">Go</button>
+      <button class="lang-btn" onclick="switchLang('cache','nginx')">nginx config</button>
+      <button class="lang-btn" onclick="switchLang('cache','varnish')">Varnish VCL</button>
+    </div>
+    <div class="code-wrapper">
+      <div class="lang-panel active" id="cache-go">
+<pre><span class="cm">// pkg/cache — in-memory QUERY response cache (from this project)</span>
+store := cache.<span class="fn">NewStore</span>(<span class="nm">5 * time.Minute</span>)
+handler := cache.<span class="fn">NewCachingHandler</span>(queryHandler, store)
+<span class="cm">// X-Cache: MISS on first request, X-Cache: HIT on repeat</span>
+
+<span class="cm">// Cache key derivation (RFC 10008 §2.2)</span>
+<span class="kw">func</span> <span class="fn">Key</span>(uri, contentType <span class="kw">string</span>, body []<span class="kw">byte</span>) <span class="kw">string</span> {
+  h := sha256.<span class="fn">New</span>()
+  h.<span class="fn">Write</span>([]<span class="kw">byte</span>(uri))
+  h.<span class="fn">Write</span>([]<span class="kw">byte</span>(<span class="str">"\x00"</span>))
+  h.<span class="fn">Write</span>([]<span class="kw">byte</span>(contentType))
+  h.<span class="fn">Write</span>([]<span class="kw">byte</span>(<span class="str">"\x00"</span>))
+  h.<span class="fn">Write</span>(body)
+  <span class="kw">return</span> hex.<span class="fn">EncodeToString</span>(h.<span class="fn">Sum</span>(<span class="kw">nil</span>))
+}
+
+<span class="cm">// RFC 10008 §2.2: "no-transform" prevents cache normalisation</span>
+<span class="cm">// Cache-Control: no-transform → use raw body as key, skip whitespace normalisation</span></pre>
+      </div>
+      <div class="lang-panel" id="cache-nginx">
+<pre><span class="cm"># nginx — cache QUERY responses using body hash as key</span>
+<span class="kw">http</span> {
+  <span class="kw">proxy_cache_path</span> /var/cache/nginx/query levels=1:2
+                   keys_zone=query_cache:10m max_size=1g
+                   inactive=5m use_temp_path=off;
+
+  <span class="kw">server</span> {
+    <span class="kw">location</span> /api/ {
+      <span class="cm"># Allow QUERY to be cached (nginx treats unknown methods as uncacheable by default)</span>
+      <span class="kw">proxy_cache_methods</span> GET HEAD <span class="str">QUERY</span>;
+      <span class="kw">proxy_cache</span> query_cache;
+
+      <span class="cm"># Cache key: URI + body digest (requires request body digest module)</span>
+      <span class="kw">proxy_cache_key</span> <span class="str">"$scheme$request_method$host$request_uri$http_content_type$request_body_hash"</span>;
+
+      <span class="kw">proxy_cache_valid</span> <span class="nm">200</span> <span class="str">5m</span>;
+      <span class="kw">add_header</span> X-Cache $upstream_cache_status;
+
+      <span class="kw">proxy_pass</span> http://backend;
+    }
+  }
+}</pre>
+      </div>
+      <div class="lang-panel" id="cache-varnish">
+<pre><span class="cm">// Varnish VCL — full QUERY caching with body-keyed lookup</span>
+<span class="kw">import</span> digest;
+
+<span class="kw">sub</span> vcl_recv {
+  <span class="cm">// Allow QUERY to pass through cache lookup (not just GET/HEAD)</span>
+  <span class="kw">if</span> (req.method == <span class="str">"QUERY"</span>) {
+    <span class="cm">// Buffer the body (requires bereq.body access in VCL 7+)</span>
+    set req.http.X-Query-Body-Hash =
+      digest.hash_sha256(req.body);
+
+    <span class="cm">// Synthesise a cache-lookup key combining URI + body hash</span>
+    set req.http.X-Cache-Key =
+      req.url + <span class="str">"|"</span> + req.http.Content-Type + <span class="str">"|"</span> + req.http.X-Query-Body-Hash;
+
+    <span class="kw">return</span>(hash);   <span class="cm">// proceed to cache lookup</span>
+  }
+}
+
+<span class="kw">sub</span> vcl_hash {
+  <span class="kw">if</span> (req.method == <span class="str">"QUERY"</span>) {
+    hash_data(req.http.X-Cache-Key);
+    <span class="kw">return</span>(lookup);
+  }
+}
+
+<span class="kw">sub</span> vcl_deliver {
+  <span class="kw">set</span> resp.http.X-Cache = <span class="kw">if</span>(obj.hits > 0, <span class="str">"HIT"</span>, <span class="str">"MISS"</span>);
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box blue">
+      <div class="ibt">No-transform directive</div>
+      <div class="ibv">Client sends <code>Cache-Control: no-transform</code> to prevent the cache from normalising the body before computing the key. The raw body is used as-is.</div>
+    </div>
+    <div class="info-box orange">
+      <div class="ibt">Body buffering cost</div>
+      <div class="ibv">A caching proxy must buffer the full request body to compute the key — more expensive than GET. For large bodies (&gt;1MB), streaming proxies may bypass the cache.</div>
+    </div>
+    <div class="info-box green">
+      <div class="ibt">Content-Location</div>
+      <div class="ibv">Server returns <code>Content-Location: /users/queries/q-abc123</code>. Client can GET that URI later without resending the body — no cache-key computation needed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Error Matrix
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-errors">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Error Response Matrix</h2>
+  <p class="lead">RFC 10008 §2 defines specific HTTP status codes for each class of QUERY failure. Correct error responses are essential for client adaptation and debuggability.</p>
+
+  <div class="demo-area">
+    <div class="demo-title">WASM Error Simulator</div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="runError('missing-content-type')">400 — Missing Content-Type</button>
+      <button class="btn btn-secondary" onclick="runError('unsupported-media-type')">415 — Unsupported Format</button>
+      <button class="btn btn-secondary" onclick="runError('invalid-query')">422 — Bad Query</button>
+      <button class="btn btn-secondary" onclick="runError('not-acceptable')">406 — Accept mismatch</button>
+    </div>
+    <div id="error-result" class="result-box">Click a scenario button above...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Complete error reference</div>
+    <table class="compare-table">
+      <tr><th>Status</th><th>Trigger</th><th>RFC ref</th><th>Special header</th></tr>
+      <tr><td><code>400 Bad Request</code></td><td>Missing <code>Content-Type</code> header on QUERY request</td><td>§2</td><td>—</td></tr>
+      <tr><td><code>400 Bad Request</code></td><td>Content-Type claims JSON but body is XML (inconsistency)</td><td>§2</td><td>—</td></tr>
+      <tr><td><code>405 Method Not Allowed</code></td><td>QUERY sent to a resource that does not support it</td><td>RFC 9110</td><td><code>Allow: GET, HEAD</code></td></tr>
+      <tr><td><code>406 Not Acceptable</code></td><td><code>Accept</code> header lists format server can't produce</td><td>§2</td><td>—</td></tr>
+      <tr><td><code>415 Unsupported Media Type</code></td><td>Query body format not understood by server</td><td>§2 + §3</td><td><code>Accept-Query: application/json</code></td></tr>
+      <tr><td><code>422 Unprocessable Content</code></td><td>Syntactically valid query but semantically invalid</td><td>§2</td><td>—</td></tr>
+      <tr><td><code>200 OK</code></td><td>Query processed successfully</td><td>§2</td><td><code>Content-Location</code> (optional)</td></tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <strong>Accept-Query header (RFC 10008 §3):</strong> When returning 415, the server MUST include an <code>Accept-Query</code> header listing the media types it does accept. This allows clients to adapt automatically. Example: <code>Accept-Query: application/json, application/x-www-form-urlencoded</code>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Server error handling — code examples</div>
+    <div class="lang-switcher" id="ls-errors">
+      <button class="lang-btn active" onclick="switchLang('errors','go')">Go</button>
+      <button class="lang-btn" onclick="switchLang('errors','js')">JavaScript (Express)</button>
+      <button class="lang-btn" onclick="switchLang('errors','python')">Python (FastAPI)</button>
+    </div>
+    <div class="code-wrapper">
+      <div class="lang-panel active" id="errors-go">
+<pre><span class="cm">// pkg/query.Handler enforces RFC 10008 error semantics automatically</span>
+<span class="kw">import</span> <span class="str">"github.com/jralmaraz/http-query-method/pkg/query"</span>
+
+handler := query.<span class="fn">NewHandler</span>(
+  <span class="kw">func</span>(req *query.Request) ([]<span class="kw">byte</span>, <span class="kw">string</span>, <span class="kw">error</span>) {
+    <span class="cm">// Validate query semantics</span>
+    <span class="kw">var</span> q SearchQuery
+    <span class="kw">if err</span> := json.<span class="fn">Unmarshal</span>(req.Body, &q); err != nil {
+      <span class="kw">return nil</span>, <span class="str">""</span>, &query.QueryError{
+        Status:  http.StatusUnprocessableEntity,   <span class="cm">// 422</span>
+        Message: <span class="str">"invalid query: "</span> + err.Error(),
+      }
+    }
+    results := db.<span class="fn">Search</span>(q)
+    out, _ := json.<span class="fn">Marshal</span>(results)
+    <span class="kw">return</span> out, <span class="str">"application/json"</span>, <span class="kw">nil</span>
+  },
+  <span class="str">"application/json"</span>,   <span class="cm">// supported types → Accept-Query on 415</span>
+)
+<span class="cm">// Missing Content-Type → 400 (automatic)</span>
+<span class="cm">// Wrong Content-Type  → 415 + Accept-Query header (automatic)</span></pre>
+      </div>
+      <div class="lang-panel" id="errors-js">
+<pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> app = express();
+
+<span class="cm">// Express doesn't know QUERY natively — register it explicitly</span>
+app.all(<span class="str">'/users'</span>, (req, res) => {
+  <span class="kw">if</span> (req.method !== <span class="str">'QUERY'</span>) {
+    <span class="kw">return</span> res.set(<span class="str">'Allow'</span>, <span class="str">'QUERY'</span>).status(<span class="nm">405</span>).json({ error: <span class="str">'Method Not Allowed'</span> });
+  }
+
+  <span class="cm">// RFC 10008 §2: validate Content-Type</span>
+  <span class="kw">const</span> ct = req.headers[<span class="str">'content-type'</span>] || <span class="str">''</span>;
+  <span class="kw">if</span> (!ct) {
+    <span class="kw">return</span> res.status(<span class="nm">400</span>).json({ error: <span class="str">'Content-Type is required for QUERY'</span> });
+  }
+  <span class="kw">if</span> (!ct.includes(<span class="str">'application/json'</span>)) {
+    <span class="kw">return</span> res
+      .set(<span class="str">'Accept-Query'</span>, <span class="str">'application/json'</span>)    <span class="cm">// RFC 10008 §3</span>
+      .status(<span class="nm">415</span>).json({ error: <span class="str">'Unsupported format'</span> });
+  }
+
+  <span class="kw">const</span> results = db.<span class="fn">search</span>(req.body);
+  res.json({ results });
+});</pre>
+      </div>
+      <div class="lang-panel" id="errors-python">
+<pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, Request, Response
+<span class="kw">from</span> fastapi.routing <span class="kw">import</span> APIRoute
+
+app = FastAPI()
+
+<span class="cm"># FastAPI allows custom HTTP methods via include_router</span>
+<span class="kw">@app</span>.api_route(<span class="str">"/users"</span>, methods=[<span class="str">"QUERY"</span>])
+<span class="kw">async def</span> <span class="fn">query_users</span>(request: Request):
+    ct = request.headers.get(<span class="str">"content-type"</span>, <span class="str">""</span>)
+    <span class="kw">if not</span> ct:
+        <span class="kw">return</span> Response(
+            content=<span class="str">'{"error":"Content-Type required"}'</span>,
+            status_code=<span class="nm">400</span>, media_type=<span class="str">"application/json"</span>
+        )
+    <span class="kw">if</span> <span class="str">"application/json"</span> <span class="kw">not in</span> ct:
+        <span class="kw">return</span> Response(
+            content=<span class="str">'{"error":"Unsupported format"}'</span>,
+            status_code=<span class="nm">415</span>, media_type=<span class="str">"application/json"</span>,
+            headers={<span class="str">"Accept-Query"</span>: <span class="str">"application/json"</span>}   <span class="cm"># RFC 10008 §3</span>
+        )
+    body = <span class="kw">await</span> request.<span class="fn">json</span>()
+    results = db.<span class="fn">search</span>(body)
+    <span class="kw">return</span> {<span class="str">"results"</span>: results}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Database Integration
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-database">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Database & Backend Integration</h2>
+  <p class="lead">The QUERY method is particularly powerful for database-backed APIs — any query language can be the body: SQL, GraphQL, JSONPath, or a custom DSL. See how different backends expose the QUERY method.</p>
+
+  <div class="demo-area">
+    <div class="demo-title">WASM DB Integration Demo</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runDB('sql')">SQL query</button>
+      <button class="btn btn-secondary" onclick="runDB('graphql')">GraphQL</button>
+      <button class="btn btn-secondary" onclick="runDB('jsonpath')">JSONPath</button>
+    </div>
+    <div id="db-result" class="result-box">Select a query type above...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Backend integration patterns</div>
+    <div class="lang-switcher" id="ls-db">
+      <button class="lang-btn active" onclick="switchLang('db','go-postgres')">Go + PostgreSQL</button>
+      <button class="lang-btn" onclick="switchLang('db','go-graphql')">Go + GraphQL</button>
+      <button class="lang-btn" onclick="switchLang('db','python-sql')">Python + SQLAlchemy</button>
+      <button class="lang-btn" onclick="switchLang('db','js-mongo')">JS + MongoDB</button>
+    </div>
+    <div class="code-wrapper">
+      <div class="lang-panel active" id="db-go-postgres">
+<pre><span class="cm">// PostgreSQL: accept application/sql body, execute as read-only query</span>
+handler := query.<span class="fn">NewHandler</span>(<span class="kw">func</span>(req *query.Request) ([]<span class="kw">byte</span>, <span class="kw">string</span>, <span class="kw">error</span>) {
+  sql := <span class="kw">string</span>(req.Body)
+
+  <span class="cm">// Safety: only SELECT statements allowed (parse + verify before exec)</span>
+  <span class="kw">if</span> !isSafeSelect(sql) {
+    <span class="kw">return nil</span>, <span class="str">""</span>, &query.QueryError{Status: <span class="nm">422</span>, Message: <span class="str">"only SELECT queries allowed"</span>}
+  }
+
+  <span class="cm">// Execute in a read-only transaction to enforce safety semantics</span>
+  rows, err := db.<span class="fn">QueryContext</span>(ctx, <span class="str">"BEGIN READ ONLY; "</span>+sql+<span class="str">"; COMMIT"</span>)
+  <span class="kw">if</span> err != nil {
+    <span class="kw">return nil</span>, <span class="str">""</span>, &query.QueryError{Status: <span class="nm">422</span>, Message: err.Error()}
+  }
+  <span class="kw">defer</span> rows.Close()
+
+  result := scanRows(rows)   <span class="cm">// → []map[string]interface{}</span>
+  out, _ := json.<span class="fn">Marshal</span>(result)
+  <span class="kw">return</span> out, <span class="str">"application/json"</span>, <span class="kw">nil</span>
+}, <span class="str">"application/sql"</span>)
+
+<span class="cm">// Content-Location lets client bookmark results:</span>
+<span class="cm">// Content-Location: /queries/results/sha256-abcdef</span></pre>
+      </div>
+      <div class="lang-panel" id="db-go-graphql">
+<pre><span class="cm">// GraphQL: accept application/graphql body</span>
+<span class="kw">import</span> <span class="str">"github.com/graphql-go/graphql"</span>
+
+handler := query.<span class="fn">NewHandler</span>(<span class="kw">func</span>(req *query.Request) ([]<span class="kw">byte</span>, <span class="kw">string</span>, <span class="kw">error</span>) {
+  <span class="cm">// Accept both pure GraphQL body and JSON-wrapped {query, variables}</span>
+  <span class="kw">var</span> gqlQuery <span class="kw">string</span>
+  <span class="kw">var</span> variables map[<span class="kw">string</span>]<span class="kw">interface</span>{}
+
+  <span class="kw">if</span> strings.<span class="fn">HasPrefix</span>(req.ContentType, <span class="str">"application/graphql"</span>) {
+    gqlQuery = <span class="kw">string</span>(req.Body)
+  } <span class="kw">else</span> {
+    <span class="kw">var</span> envelope <span class="kw">struct</span> { Query <span class="kw">string</span>; Variables map[<span class="kw">string</span>]<span class="kw">interface</span>{} }
+    json.<span class="fn">Unmarshal</span>(req.Body, &envelope)
+    gqlQuery = envelope.Query
+    variables = envelope.Variables
+  }
+
+  result := graphql.<span class="fn">Do</span>(graphql.Params{Schema: schema, RequestString: gqlQuery, VariableValues: variables})
+  out, _ := json.<span class="fn">Marshal</span>(result)
+  <span class="kw">return</span> out, <span class="str">"application/json"</span>, <span class="kw">nil</span>
+}, <span class="str">"application/graphql"</span>, <span class="str">"application/json"</span>)</pre>
+      </div>
+      <div class="lang-panel" id="db-python-sql">
+<pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, Request, Response
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> text
+<span class="kw">import</span> json
+
+app = FastAPI()
+
+<span class="kw">@app</span>.api_route(<span class="str">"/data"</span>, methods=[<span class="str">"QUERY"</span>])
+<span class="kw">async def</span> <span class="fn">sql_query</span>(request: Request):
+    ct = request.headers.get(<span class="str">"content-type"</span>, <span class="str">""</span>)
+
+    <span class="kw">if</span> <span class="str">"application/sql"</span> <span class="kw">not in</span> ct:
+        <span class="kw">return</span> Response(status_code=<span class="nm">415</span>,
+                        headers={<span class="str">"Accept-Query"</span>: <span class="str">"application/sql, application/json"</span>})
+
+    sql = (<span class="kw">await</span> request.<span class="fn">body</span>()).decode()
+
+    <span class="cm"># Enforce read-only: parse AST, reject non-SELECT</span>
+    <span class="kw">if not</span> sql.strip().upper().<span class="fn">startswith</span>(<span class="str">"SELECT"</span>):
+        <span class="kw">return</span> Response(status_code=<span class="nm">422</span>,
+                        content=<span class="str">'{"error":"Only SELECT allowed"}'</span>)
+
+    <span class="kw">with</span> db.connect() <span class="kw">as</span> conn:
+        result = conn.<span class="fn">execute</span>(<span class="fn">text</span>(sql))
+        rows = [dict(r) <span class="kw">for</span> r <span class="kw">in</span> result]
+
+    <span class="kw">return</span> {<span class="str">"results"</span>: rows, <span class="str">"total"</span>: len(rows)}</pre>
+      </div>
+      <div class="lang-panel" id="db-js-mongo">
+<pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> { MongoClient } = <span class="fn">require</span>(<span class="str">'mongodb'</span>);
+
+app.all(<span class="str">'/documents'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">if</span> (req.method !== <span class="str">'QUERY'</span>) <span class="kw">return</span> res.status(<span class="nm">405</span>).send();
+
+  <span class="kw">const</span> filter  = req.body?.filter  || {};
+  <span class="kw">const</span> project = req.body?.project || {};
+  <span class="kw">const</span> sort    = req.body?.sort    || {};
+  <span class="kw">const</span> limit   = Math.<span class="fn">min</span>(req.body?.limit || <span class="nm">100</span>, <span class="nm">1000</span>);
+
+  <span class="cm">// MongoDB filter expression is the QUERY body — no separate query param</span>
+  <span class="kw">const</span> results = <span class="kw">await</span> collection
+    .<span class="fn">find</span>(filter, { projection: project })
+    .<span class="fn">sort</span>(sort)
+    .<span class="fn">limit</span>(limit)
+    .<span class="fn">toArray</span>();
+
+  <span class="cm">// Return Content-Location for client-side bookmarking</span>
+  <span class="kw">const</span> queryHash = <span class="fn">sha256</span>(JSON.<span class="fn">stringify</span>(req.body));
+  res
+    .set(<span class="str">'Content-Location'</span>, <span class="str">`/queries/${queryHash}`</span>)
+    .set(<span class="str">'Cache-Control'</span>, <span class="str">'max-age=300'</span>)
+    .json({ results, total: results.length });
+});</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Playground
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-playground">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Live Playground</h2>
+  <p class="lead">Send QUERY requests to the in-browser Go server (compiled to WASM). All processing happens locally — no network requests.</p>
+
+  <div class="demo-area">
+    <div class="demo-title">QUERY Request Builder</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
+      <div>
+        <label style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Method</label>
+        <select id="pg-method" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);font-size:13px">
+          <option value="QUERY">QUERY (RFC 10008)</option>
+          <option value="GET">GET (for comparison)</option>
+          <option value="POST">POST (for comparison)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Content-Type</label>
+        <select id="pg-ct" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);font-size:13px">
+          <option value="application/json">application/json</option>
+          <option value="">— omit (test 400)</option>
+          <option value="application/xml">application/xml (test 415)</option>
+        </select>
+      </div>
+    </div>
+    <label style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Request Body</label>
+    <textarea id="pg-body" rows="6">{"filter": "active", "limit": 5}</textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runPlayground()">&#x25B6; Send QUERY</button>
+      <button class="btn btn-secondary" onclick="loadPreset('search')">Preset: search</button>
+      <button class="btn btn-secondary" onclick="loadPreset('complex')">Preset: complex filter</button>
+      <button class="btn btn-secondary" onclick="loadPreset('invalid')">Preset: invalid JSON</button>
+    </div>
+    <div id="pg-result" class="result-box">Enter a query body and click "Send QUERY"...</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: Standards
+═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-standards">
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Standards Tracker</h2>
+  <p class="lead">This project tracks RFC 10008 and related HTTP standards. A GitHub Actions workflow checks the IETF Datatracker daily and opens a GitHub issue on any update.</p>
+
+  <!-- Lifecycle legend -->
+  <div class="card">
+    <div class="card-title">IETF Standard Lifecycle</div>
+    <div class="lifecycle-bar">
+      <div class="lc-step lc-individual" title="Individual submission — not yet adopted by any WG">Individual Draft</div>
+      <div class="lc-step lc-wg-draft" title="Working Group draft — under active WG review">WG Draft</div>
+      <div class="lc-step lc-lc" title="Last Call — community review before IESG consideration">Last Call</div>
+      <div class="lc-step lc-lc" title="IESG Review — Internet Engineering Steering Group evaluation">IESG Review</div>
+      <div class="lc-step lc-rfc lc-active" title="Published RFC — stable; production-ready">Published RFC ← RFC 10008</div>
+    </div>
+    <div class="info-grid" style="margin-top:16px">
+      <div class="info-box">
+        <div class="ibt">PoC status legend</div>
+        <div class="ibv">
+          <span class="tag tag-impl">Implemented</span> — has animated demo + Go code<br>
+          <span class="tag tag-monitor">Monitoring</span> — tracked; not yet implemented<br>
+          <span class="tag tag-na">Excluded</span> — out of scope; decision documented
+        </div>
+      </div>
+      <div class="info-box orange">
+        <div class="ibt">Production readiness</div>
+        <div class="ibv">Only <strong>Published RFCs</strong> should be used in production. WG Drafts and individual drafts are unstable — breaking changes are expected.</div>
+      </div>
+      <div class="info-box blue">
+        <div class="ibt">WG Draft caution</div>
+        <div class="ibv">This PoC implements and monitors WG drafts for early adoption exploration. <code>implemented_rev</code> in the baseline locks the specific revision implemented.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tracked standards</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Last checked: <code>2026-08-02</code> &nbsp;·&nbsp; <a href="https://github.com/jralmaraz/http-query-method/blob/main/standards-baseline.json" target="_blank" style="color:var(--blue)">standards-baseline.json</a> &nbsp;·&nbsp; <a href="https://github.com/jralmaraz/http-query-method/blob/main/.github/workflows/standards-tracker.yml" target="_blank" style="color:var(--blue)">standards-tracker.yml</a></p>
+    <table class="compare-table" style="font-size:12.5px">
+      <tr>
+        <th>Standard</th>
+        <th>WG / Publisher</th>
+        <th>Lifecycle status</th>
+        <th>PoC status</th>
+        <th style="text-align:center">Rev</th>
+        <th>Affected files</th>
+        <th>Impl. commit</th>
+      </tr>
+      <tr>
+        <td><a href="https://www.rfc-editor.org/rfc/rfc10008" target="_blank" style="color:var(--blue)">RFC 10008 — HTTP QUERY Method</a></td>
+        <td style="white-space:nowrap;font-size:11px">IETF HTTP WG</td>
+        <td><span style="color:var(--green)">● Published RFC</span></td>
+        <td><span class="tag tag-impl">Implemented</span></td>
+        <td style="text-align:center"><code>RFC</code></td>
+        <td style="font-size:10px;color:var(--muted)"><code>pkg/query</code>, <code>cmd/demo-wasm</code>, <code>demo/index.html</code></td>
+        <td style="text-align:center;font-size:10px;white-space:nowrap"><a href="https://github.com/jralmaraz/http-query-method/commit/initial" target="_blank" style="color:var(--blue)"><code>initial</code></a></td>
+      </tr>
+      <tr>
+        <td><a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" style="color:var(--blue)">RFC 9110 — HTTP Semantics</a></td>
+        <td style="white-space:nowrap;font-size:11px">IETF HTTP WG</td>
+        <td><span style="color:var(--green)">● Published RFC</span></td>
+        <td><span class="tag tag-impl">Implemented</span></td>
+        <td style="text-align:center"><code>RFC</code></td>
+        <td style="font-size:10px;color:var(--muted)"><code>pkg/query</code> (method semantics, status codes, Allow header)</td>
+        <td style="text-align:center;font-size:10px;white-space:nowrap"><a href="https://github.com/jralmaraz/http-query-method/commit/initial" target="_blank" style="color:var(--blue)"><code>initial</code></a></td>
+      </tr>
+      <tr>
+        <td><a href="https://www.rfc-editor.org/rfc/rfc7234" target="_blank" style="color:var(--blue)">RFC 7234 — HTTP/1.1 Caching</a></td>
+        <td style="white-space:nowrap;font-size:11px">IETF HTTP WG</td>
+        <td><span style="color:var(--green)">● Published RFC</span></td>
+        <td><span class="tag tag-impl">Implemented</span></td>
+        <td style="text-align:center"><code>RFC</code></td>
+        <td style="font-size:10px;color:var(--muted)"><code>pkg/cache</code> (TTL, X-Cache, no-transform, body-keyed key)</td>
+        <td style="text-align:center;font-size:10px;white-space:nowrap"><a href="https://github.com/jralmaraz/http-query-method/commit/initial" target="_blank" style="color:var(--blue)"><code>initial</code></a></td>
+      </tr>
+      <tr>
+        <td><a href="https://www.rfc-editor.org/rfc/rfc8288" target="_blank" style="color:var(--blue)">RFC 8288 — Web Linking</a></td>
+        <td style="white-space:nowrap;font-size:11px">IETF HTTP WG</td>
+        <td><span style="color:var(--green)">● Published RFC</span></td>
+        <td><span class="tag tag-monitor">Monitoring</span></td>
+        <td style="text-align:center"><code>RFC</code></td>
+        <td style="font-size:10px;color:var(--muted)"><code>Content-Location</code> / <code>Location</code> result URI semantics</td>
+        <td style="text-align:center;font-size:10px;white-space:nowrap"><span style="color:var(--muted)">monitoring</span></td>
+      </tr>
+      <tr>
+        <td><a href="https://www.rfc-editor.org/rfc/rfc7807" target="_blank" style="color:var(--blue)">RFC 7807 — Problem Details</a></td>
+        <td style="white-space:nowrap;font-size:11px">IETF HTTP WG</td>
+        <td><span style="color:var(--green)">● Published RFC</span></td>
+        <td><span class="tag tag-monitor">Monitoring</span></td>
+        <td style="text-align:center"><code>RFC</code></td>
+        <td style="font-size:10px;color:var(--muted)"><code>pkg/query</code> error responses (could adopt <code>application/problem+json</code>)</td>
+        <td style="text-align:center;font-size:10px;white-space:nowrap"><span style="color:var(--muted)">monitoring</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Automated tracking</div>
+    <div class="info-grid">
+      <div class="info-box blue">
+        <div class="ibt">Daily cron</div>
+        <div class="ibv" style="font-size:11px;line-height:1.6">GitHub Actions runs <code>scripts/check_standards.py</code> at 09:00 UTC. Queries the IETF Datatracker API for each tracked standard and compares to <code>standards-baseline.json</code>.</div>
+      </div>
+      <div class="info-box green">
+        <div class="ibt">RFC finality check</div>
+        <div class="ibv" style="font-size:11px;line-height:1.6">For Published RFCs, the tracker checks for errata or obsoleted-by relationships. An RFC being obsoleted is treated as a high-priority update.</div>
+      </div>
+      <div class="info-box orange">
+        <div class="ibt">Issue opened on change</div>
+        <div class="ibv" style="font-size:11px;line-height:1.6">A <code>standards-update</code> labelled issue lists the change, the PoC impact, affected files, and the due-diligence checklist from <a href="../docs/standards-tracking.md" style="color:var(--orange)">docs/standards-tracking.md</a>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="wasm-status">Loading WASM...</div>
+
+<script src="wasm_exec.js"></script>
+<script>
+// ── Tab routing ──────────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Language switcher ────────────────────────────────────────────────────────
+function switchLang(group, lang) {
+  const sw = document.getElementById('ls-' + group);
+  sw.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Hide all panels in the next sibling .code-wrapper
+  const wrapper = sw.nextElementSibling;
+  wrapper.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(group + '-' + lang);
+  if (panel) panel.classList.add('active');
+}
+
+// ── WASM loading ─────────────────────────────────────────────────────────────
+let wasmReady = false;
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch('query.wasm'), go.importObject)
+  .then(result => {
+    go.run(result.instance);
+  });
+
+document.addEventListener('wasm-ready', () => {
+  wasmReady = true;
+  const s = document.getElementById('wasm-status');
+  s.textContent = '⬡ WASM ready';
+  s.className = 'ready';
+  setTimeout(() => { s.style.opacity = '0'; }, 3000);
+});
+
+function wasmCall(fn, ...args) {
+  if (!wasmReady) return { ok: false, error: 'WASM not loaded yet — please wait a moment and try again' };
+  try {
+    const result = window[fn](...args);
+    return result || { ok: false, error: 'no result' };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+function pretty(obj) {
+  return JSON.stringify(obj, null, 2);
+}
+
+function showResult(id, obj, isOk) {
+  const el = document.getElementById(id);
+  el.textContent = pretty(obj);
+  el.className = 'result-box ' + (isOk ? 'ok' : 'error');
+}
+
+// ── Demo functions ────────────────────────────────────────────────────────────
+function runCompare() {
+  const r = wasmCall('queryVsGet');
+  showResult('compare-result', r, r.ok);
+}
+
+function runCacheDemo() {
+  const body = document.getElementById('cache-query').value;
+  const r = wasmCall('queryCacheDemo', body);
+  showResult('cache-result', r, r.ok);
+}
+
+function runError(scenario) {
+  const r = wasmCall('queryErrorDemo', scenario);
+  showResult('error-result', r, r.ok);
+}
+
+function runDB(type) {
+  const r = wasmCall('queryDBDemo', type);
+  showResult('db-result', r, r.ok);
+}
+
+function runPlayground() {
+  const body = document.getElementById('pg-body').value;
+  const r = wasmCall('queryDemo', body);
+  showResult('pg-result', r, r.ok);
+}
+
+function loadPreset(type) {
+  const presets = {
+    search: '{"filter": "active", "limit": 5}',
+    complex: '{"filter":{"status":"active","dept":["Engineering","Sales"],"hired_after":"2023-01-01"},"sort":[{"field":"name","dir":"asc"}],"limit":50}',
+    invalid: 'not valid json {'
+  };
+  document.getElementById('pg-body').value = presets[type] || '{}';
+}
+
+// ── Flow animation ───────────────────────────────────────────────────────────
+let flowTimer = null;
+
+function runFlow(type) {
+  clearTimeout(flowTimer);
+  const steps = document.querySelectorAll('#flow-steps .vstep');
+  steps.forEach(s => s.classList.remove('active', 'pass'));
+  const stepEl = document.getElementById('flow-step');
+
+  const messages = {
+    miss: [
+      'QUERY /users sent with body', 'Cache checks key — MISS', 'Server processes query', 'Response cached, returned'
+    ],
+    hit: [
+      'QUERY /users sent with body', 'Cache checks key — HIT!', 'Cached response returned (no backend call)', 'X-Cache: HIT, 1ms latency'
+    ],
+    '415': [
+      'QUERY /users sent with application/xml body', 'Cache: Content-Type not in key → MISS', 'Server: format unsupported!', '415 + Accept-Query: application/json'
+    ]
+  };
+  const msgs = messages[type] || messages.miss;
+  let i = 0;
+  function next() {
+    if (i > 0) steps[i - 1].classList.replace('active', 'pass');
+    if (i < steps.length) {
+      steps[i].classList.add('active');
+      stepEl.textContent = msgs[i] || '';
+      i++;
+      flowTimer = setTimeout(next, 1400);
+    }
+  }
+  next();
+}
+</script>
+</body>
+</html>

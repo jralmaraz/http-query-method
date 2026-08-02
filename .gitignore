@@ -1,0 +1,5 @@
+# Build artifacts
+*.test
+*.out
+vendor/
+# Keep demo/query.wasm and demo/wasm_exec.js in git for GitHub Pages

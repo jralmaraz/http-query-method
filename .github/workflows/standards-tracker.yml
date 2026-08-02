@@ -1,0 +1,42 @@
+name: Standards Tracker
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # daily at 09:00 UTC
+  workflow_dispatch:        # manual trigger for testing
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check-standards:
+    name: Check RFC and IETF standards for updates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run standards checker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 scripts/check_standards.py
+
+      - name: Commit updated baseline (if changed)
+        run: |
+          git config user.name  "standards-tracker[bot]"
+          git config user.email "standards-tracker[bot]@users.noreply.github.com"
+          if git diff --quiet standards-baseline.json; then
+            echo "No changes to standards-baseline.json"
+          else
+            git add standards-baseline.json
+            git commit -m "chore(standards): update baseline after daily check [skip ci]"
+            git push
+          fi
