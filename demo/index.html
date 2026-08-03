@@ -301,33 +301,53 @@
   <p class="lead">A QUERY request flows through client → (optional proxy cache) → origin server. The animation shows all three paths: cache miss, cache hit, and the Accept-Query negotiation on unsupported formats.</p>
 
   <div class="diagram">
-    <svg id="flow-svg" viewBox="0 0 750 220" xmlns="http://www.w3.org/2000/svg">
-      <!-- Client -->
-      <rect x="10" y="80" width="110" height="52" rx="8" class="node-box client"/>
-      <text x="65" y="102" class="node-lbl">Client</text>
-      <text x="65" y="117" class="node-sub">application</text>
-      <!-- Cache -->
-      <rect x="290" y="80" width="110" height="52" rx="8" class="node-box cache"/>
-      <text x="345" y="102" class="node-lbl">Proxy Cache</text>
-      <text x="345" y="117" class="node-sub">RFC 7234 + 10008</text>
-      <!-- Server -->
-      <rect x="570" y="80" width="120" height="52" rx="8" class="node-box server"/>
-      <text x="630" y="102" class="node-lbl">Origin Server</text>
-      <text x="630" y="117" class="node-sub">QUERY handler</text>
-      <!-- Wires -->
-      <line x1="120" y1="106" x2="290" y2="106" class="wire wire-active" id="wire-1"/>
-      <line x1="400" y1="106" x2="570" y2="106" class="wire wire-active" id="wire-2"/>
-      <!-- Packets -->
-      <circle id="pkt-a" cx="65" cy="106" r="7" fill="var(--blue)" style="visibility:hidden"/>
-      <circle id="pkt-b" cx="345" cy="106" r="7" fill="var(--purple)" style="visibility:hidden"/>
-      <text x="205" y="98" class="pkt-lbl" id="label-req">QUERY /users</text>
-      <text x="205" y="123" class="pkt-lbl" id="label-body">{filter, limit}</text>
-      <text x="485" y="98" class="pkt-lbl" id="label-fwd">forward or cache</text>
-      <!-- Result arrow -->
-      <line x1="120" y1="140" x2="570" y2="140" class="wire" id="wire-resp" stroke-dasharray="4 3" stroke="var(--muted)"/>
-      <text x="350" y="157" class="pkt-lbl" id="label-resp" style="fill:var(--green)">200 OK + results</text>
-      <!-- Step labels -->
-      <text x="375" y="30" id="flow-step" class="node-lbl" style="fill:var(--blue);font-size:11px">Click "Run Flow" to animate</text>
+    <svg id="flow-svg" viewBox="0 0 750 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Arrowhead for wires (auto-orient so it works for both directions) -->
+        <marker id="ah-r" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+          <path d="M0,1 L5,3.5 L0,6 Z" fill="rgba(255,255,255,0.3)"/>
+        </marker>
+      </defs>
+      <!-- Status text — updated by JS -->
+      <text x="375" y="22" id="flow-step" text-anchor="middle" class="node-lbl" style="fill:var(--blue);font-size:12px">Click a button below to animate the flow</text>
+      <!-- Nodes -->
+      <rect x="10" y="38" width="110" height="52" rx="8" class="node-box client"/>
+      <text x="65" y="60" class="node-lbl">Client</text>
+      <text x="65" y="75" class="node-sub">application</text>
+      <rect x="290" y="38" width="110" height="52" rx="8" class="node-box cache"/>
+      <text x="345" y="60" class="node-lbl">Proxy Cache</text>
+      <text x="345" y="75" class="node-sub">SHA-256 keyed</text>
+      <rect x="570" y="38" width="120" height="52" rx="8" class="node-box server"/>
+      <text x="630" y="60" class="node-lbl">Origin Server</text>
+      <text x="630" y="75" class="node-sub">QUERY handler</text>
+      <!-- Forward wires (y=64 = center of nodes) with arrowheads -->
+      <line x1="120" y1="64" x2="289" y2="64" class="wire wire-active" id="wire-1" marker-end="url(#ah-r)"/>
+      <line x1="401" y1="64" x2="569" y2="64" class="wire wire-active" id="wire-2" marker-end="url(#ah-r)"/>
+      <!-- Return wire (x reversed so arrowhead points left toward client) -->
+      <line x1="569" y1="115" x2="121" y2="115" class="wire" id="wire-resp" stroke-dasharray="5 3" stroke="rgba(255,255,255,0.2)" marker-end="url(#ah-r)"/>
+      <!-- Static wire descriptor labels -->
+      <text x="205" y="55" text-anchor="middle" style="font-size:9px;fill:rgba(255,255,255,0.35);font-family:monospace">QUERY + body →</text>
+      <text x="485" y="55" text-anchor="middle" style="font-size:9px;fill:rgba(255,255,255,0.35);font-family:monospace">→ forwarded</text>
+      <text x="345" y="133" text-anchor="middle" style="font-size:9px;fill:rgba(255,255,255,0.35);font-family:monospace">← response</text>
+      <!-- Labeled packet groups: circle + pill label that travel together.
+           fpkt-a / fpkt-b: label above the dot (for packets on the forward wire)
+           fpkt-c:           label below the dot (for packets on the return wire)
+           Rendered last so they appear on top of node boxes. -->
+      <g id="fpkt-a" style="visibility:hidden">
+        <circle r="11" fill="var(--blue)" id="fpkt-a-dot"/>
+        <rect x="-30" y="-30" width="60" height="17" rx="3" fill="#0d1117" stroke="var(--blue)" stroke-width="1.2" id="fpkt-a-bg"/>
+        <text y="-18" text-anchor="middle" id="fpkt-a-lbl" style="font-size:9px;font-weight:700;fill:var(--blue);font-family:monospace">QUERY</text>
+      </g>
+      <g id="fpkt-b" style="visibility:hidden">
+        <circle r="11" fill="var(--purple)" id="fpkt-b-dot"/>
+        <rect x="-30" y="-30" width="60" height="17" rx="3" fill="#0d1117" stroke="var(--purple)" stroke-width="1.2" id="fpkt-b-bg"/>
+        <text y="-18" text-anchor="middle" id="fpkt-b-lbl" style="font-size:9px;font-weight:700;fill:var(--purple);font-family:monospace">→ origin</text>
+      </g>
+      <g id="fpkt-c" style="visibility:hidden">
+        <circle r="11" fill="var(--green)" id="fpkt-c-dot"/>
+        <rect x="-28" y="13" width="56" height="17" rx="3" fill="#0d1117" stroke="var(--green)" stroke-width="1.2" id="fpkt-c-bg"/>
+        <text y="25" text-anchor="middle" id="fpkt-c-lbl" style="font-size:9px;font-weight:700;fill:var(--green);font-family:monospace">200 OK</text>
+      </g>
     </svg>
   </div>
 
@@ -368,6 +388,7 @@
       <button class="lang-btn" onclick="switchLang('compare','js')">JavaScript</button>
       <button class="lang-btn" onclick="switchLang('compare','python')">Python</button>
       <button class="lang-btn" onclick="switchLang('compare','rust')">Rust</button>
+      <button class="lang-btn" onclick="switchLang('compare','java')">Java</button>
     </div>
     <div class="code-wrapper">
       <div class="lang-panel active" id="compare-curl">
@@ -480,6 +501,72 @@ app = Flask(__name__)
         <span class="kw">return</span> jsonify(error=<span class="str">"Content-Type required"</span>), <span class="nm">400</span>
     results = db.<span class="fn">search</span>(query[<span class="str">"filter"</span>], query.get(<span class="str">"limit"</span>, <span class="nm">20</span>))
     <span class="kw">return</span> <span class="fn">jsonify</span>(results=results)</pre>
+      </div>
+      <div class="lang-panel" id="compare-java">
+<pre><span class="kw">import</span> java.net.URI;
+<span class="kw">import</span> java.net.http.*;
+<span class="kw">import</span> java.net.URLEncoder;
+
+<span class="cm">// ─── GET (query in URI — breaks at ~2000 chars) ───────────────────</span>
+<span class="kw">var</span> client = HttpClient.newHttpClient();
+<span class="kw">var</span> params = URLEncoder.<span class="fn">encode</span>(<span class="str">"""
+    {"status":"active","dept":["Engineering"]}"""</span>, StandardCharsets.UTF_8);
+<span class="kw">var</span> get = HttpRequest.newBuilder()
+    .uri(URI.<span class="fn">create</span>(<span class="str">"https://api.example.com/users?filter="</span> + params + <span class="str">"&amp;limit=50"</span>))
+    .GET()
+    .header(<span class="str">"Accept"</span>, <span class="str">"application/json"</span>)
+    .build();
+
+<span class="cm">// ─── POST (not safe, not cacheable) ───────────────────────────────</span>
+<span class="kw">var</span> body = <span class="str">"""
+    {"filter":{"status":"active","dept":["Engineering"]},
+     "sort":[{"field":"name","dir":"asc"}],"limit":50}"""</span>;
+<span class="kw">var</span> post = HttpRequest.newBuilder()
+    .uri(URI.<span class="fn">create</span>(<span class="str">"https://api.example.com/users/search"</span>))
+    .POST(HttpRequest.BodyPublishers.<span class="fn">ofString</span>(body))
+    .header(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>)
+    .build();
+
+<span class="cm">// ─── QUERY (safe + cacheable + body) — Java 11+ HttpClient ────────</span>
+<span class="kw">var</span> query = HttpRequest.newBuilder()
+    .uri(URI.<span class="fn">create</span>(<span class="str">"https://api.example.com/users"</span>))
+    .method(<span class="str">"QUERY"</span>, HttpRequest.BodyPublishers.<span class="fn">ofString</span>(body))
+    .headers(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>,
+             <span class="str">"Accept"</span>,       <span class="str">"application/json"</span>)
+    .build();
+<span class="kw">var</span> response = client.<span class="fn">send</span>(query, HttpResponse.BodyHandlers.<span class="fn">ofString</span>());
+<span class="cm">// QUERY is safe + idempotent → safe to retry on timeout or 5xx</span>
+
+<span class="cm">// ─── Spring Boot 6 client (RestClient with custom method) ─────────</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="nm">UserQueryService</span> {
+    <span class="kw">private final</span> RestClient rest = RestClient.<span class="fn">create</span>();
+
+    <span class="kw">public</span> List&lt;User&gt; <span class="fn">findUsers</span>(UserFilter filter) {
+        <span class="kw">return</span> rest
+            .method(HttpMethod.<span class="fn">valueOf</span>(<span class="str">"QUERY"</span>))
+            .uri(<span class="str">"https://api.example.com/users"</span>)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(filter)
+            .retrieve()
+            .body(<span class="kw">new</span> ParameterizedTypeReference&lt;List&lt;User&gt;&gt;() {});
+    }
+}
+
+<span class="cm">// ─── Spring Boot 6 handler (server side) ──────────────────────────</span>
+<span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/users"</span>)
+<span class="kw">public class</span> <span class="nm">UserController</span> {
+
+    <span class="kw">@RequestMapping</span>(method = RequestMethod.<span class="fn">valueOf</span>(<span class="str">"QUERY"</span>),
+                    consumes = MediaType.APPLICATION_JSON_VALUE)
+    <span class="kw">public</span> ResponseEntity&lt;List&lt;User&gt;&gt; <span class="fn">queryUsers</span>(<span class="kw">@RequestBody</span> UserFilter filter) {
+        <span class="kw">var</span> results = userService.<span class="fn">search</span>(filter);
+        <span class="kw">return</span> ResponseEntity.<span class="fn">ok</span>()
+            .header(<span class="str">"Content-Location"</span>, <span class="str">"/users/results/"</span> + filter.<span class="fn">cacheKey</span>())
+            .body(results);
+    }
+}</pre>
       </div>
       <div class="lang-panel" id="compare-rust">
 <pre><span class="kw">use</span> reqwest::Method;
@@ -726,6 +813,7 @@ handler := cache.<span class="fn">NewCachingHandler</span>(queryHandler, store)
       <button class="lang-btn active" onclick="switchLang('errors','go')">Go</button>
       <button class="lang-btn" onclick="switchLang('errors','js')">JavaScript (Express)</button>
       <button class="lang-btn" onclick="switchLang('errors','python')">Python (FastAPI)</button>
+      <button class="lang-btn" onclick="switchLang('errors','java')">Java (Spring Boot)</button>
     </div>
     <div class="code-wrapper">
       <div class="lang-panel active" id="errors-go">
@@ -800,6 +888,54 @@ app = FastAPI()
     body = <span class="kw">await</span> request.<span class="fn">json</span>()
     results = db.<span class="fn">search</span>(body)
     <span class="kw">return</span> {<span class="str">"results"</span>: results}</pre>
+      </div>
+      <div class="lang-panel" id="errors-java">
+<pre><span class="kw">import</span> org.springframework.web.bind.annotation.*;
+<span class="kw">import</span> org.springframework.http.*;
+
+<span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/users"</span>)
+<span class="kw">public class</span> <span class="nm">UserController</span> {
+
+    <span class="cm">// Register QUERY method — Spring MVC accepts arbitrary method names</span>
+    <span class="kw">@RequestMapping</span>(method = RequestMethod.<span class="fn">valueOf</span>(<span class="str">"QUERY"</span>),
+                    consumes = MediaType.APPLICATION_JSON_VALUE,
+                    produces = MediaType.APPLICATION_JSON_VALUE)
+    <span class="kw">public</span> ResponseEntity&lt;?&gt; <span class="fn">queryUsers</span>(
+            HttpServletRequest req,
+            <span class="kw">@RequestBody</span>(required = <span class="nm">false</span>) UserFilter filter) {
+
+        <span class="cm">// 400 — missing Content-Type or body (Spring throws HttpMediaTypeNotSupportedException)</span>
+        <span class="kw">if</span> (filter == <span class="nm">null</span>) {
+            <span class="kw">return</span> ResponseEntity.<span class="fn">badRequest</span>()
+                .body(Map.<span class="fn">of</span>(<span class="str">"error"</span>, <span class="str">"Content-Type and body required"</span>));
+        }
+
+        <span class="cm">// Business logic — safe to retry (QUERY is idempotent)</span>
+        <span class="kw">var</span> results = userService.<span class="fn">search</span>(filter);
+
+        <span class="cm">// 200 — include Content-Location for the result URI (RFC 10008 §4)</span>
+        <span class="kw">return</span> ResponseEntity.<span class="fn">ok</span>()
+            .header(<span class="str">"Content-Location"</span>, <span class="str">"/users/results/"</span> + filter.<span class="fn">cacheKey</span>())
+            .body(results);
+    }
+
+    <span class="cm">// 415 — wrong Content-Type; Spring auto-sends this but you can customise:</span>
+    <span class="kw">@ExceptionHandler</span>(HttpMediaTypeNotSupportedException.<span class="kw">class</span>)
+    <span class="kw">public</span> ResponseEntity&lt;?&gt; <span class="fn">handleUnsupportedMedia</span>() {
+        <span class="kw">return</span> ResponseEntity.status(<span class="nm">415</span>)
+            .header(<span class="str">"Accept-Query"</span>, <span class="str">"application/json"</span>)  <span class="cm">// RFC 10008 §3</span>
+            .body(Map.<span class="fn">of</span>(<span class="str">"error"</span>, <span class="str">"Unsupported format; use application/json"</span>));
+    }
+
+    <span class="cm">// 405 — if someone sends GET or POST to this endpoint</span>
+    <span class="kw">@ExceptionHandler</span>(HttpRequestMethodNotSupportedException.<span class="kw">class</span>)
+    <span class="kw">public</span> ResponseEntity&lt;?&gt; <span class="fn">handleWrongMethod</span>() {
+        <span class="kw">return</span> ResponseEntity.status(<span class="nm">405</span>)
+            .header(<span class="str">"Allow"</span>, <span class="str">"QUERY, OPTIONS"</span>)
+            .body(Map.<span class="fn">of</span>(<span class="str">"error"</span>, <span class="str">"Use QUERY method for search operations"</span>));
+    }
+}</pre>
       </div>
     </div>
   </div>
@@ -1252,38 +1388,129 @@ function activateStep(steps, i) {
   if (steps[i]) steps[i].classList.add('active');
 }
 
-// ── Flow animation (Protocol Flow tab) ───────────────────────────────────────
-let flowTimer = null;
-
-function runFlow(type) {
-  clearTimeout(flowTimer);
-  const steps = document.querySelectorAll('#flow-steps .vstep');
-  steps.forEach(s => s.classList.remove('active', 'pass'));
-  const stepEl = document.getElementById('flow-step');
-
-  const messages = {
-    miss: [
-      'QUERY /users sent with body', 'Cache checks key — MISS', 'Server processes query', 'Response cached, returned'
-    ],
-    hit: [
-      'QUERY /users sent with body', 'Cache checks key — HIT!', 'Cached response returned (no backend call)', 'X-Cache: HIT, 1ms latency'
-    ],
-    '415': [
-      'QUERY /users sent with application/xml body', 'Cache: Content-Type not in key → MISS', 'Server: format unsupported!', '415 + Accept-Query: application/json'
-    ]
-  };
-  const msgs = messages[type] || messages.miss;
-  let i = 0;
-  function next() {
-    if (i > 0) steps[i - 1].classList.replace('active', 'pass');
-    if (i < steps.length) {
-      steps[i].classList.add('active');
-      stepEl.textContent = msgs[i] || '';
-      i++;
-      flowTimer = setTimeout(next, 1400);
+// Animate a labeled <g> group by updating its transform translate()
+function animGrp(id, fromX, fromY, toX, toY, dur) {
+  const g = document.getElementById(id);
+  if (!g) return Promise.resolve();
+  return new Promise(resolve => {
+    g.setAttribute('transform', `translate(${fromX},${fromY})`);
+    g.style.visibility = 'visible';
+    const t0 = performance.now();
+    function tick(now) {
+      const t = Math.min((now - t0) / dur, 1);
+      g.setAttribute('transform',
+        `translate(${fromX + (toX - fromX) * t},${fromY + (toY - fromY) * t})`);
+      if (t < 1) requestAnimationFrame(tick);
+      else { g.style.visibility = 'hidden'; resolve(); }
     }
+    requestAnimationFrame(tick);
+  });
+}
+
+// ── Flow animation (Protocol Flow tab) ───────────────────────────────────────
+let flowGen = 0;
+
+async function runFlow(type) {
+  const gen = ++flowGen;
+  const alive = () => gen === flowGen;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  // Reset steps and hide all packets
+  document.querySelectorAll('#flow-steps .vstep').forEach(s => s.classList.remove('active', 'pass'));
+  ['fpkt-a', 'fpkt-b', 'fpkt-c'].forEach(id => {
+    const g = document.getElementById(id);
+    if (g) g.style.visibility = 'hidden';
+  });
+
+  const stepEl = document.getElementById('flow-step');
+  const steps  = document.querySelectorAll('#flow-steps .vstep');
+
+  // Node centres and wire Y positions (match SVG layout)
+  const CX = 65, PX = 345, SX = 630, WY = 64, RY = 115;
+
+  // Update a packet group's color and label text
+  function setPkt(id, col, lbl) {
+    const g = document.getElementById(id);
+    if (!g) return;
+    g.querySelector('circle').setAttribute('fill', col);
+    g.querySelectorAll('rect').forEach(r => r.setAttribute('stroke', col));
+    const t = g.querySelector('text');
+    if (t) { t.textContent = lbl; t.style.fill = col; }
   }
-  next();
+
+  if (type === 'miss') {
+    activateStep(steps, 0);
+    stepEl.textContent = '① Client sends QUERY /users with query body (Content-Type: application/json)';
+    setPkt('fpkt-a', 'var(--blue)', 'QUERY');
+    if (!alive()) return;
+    await animGrp('fpkt-a', CX, WY, PX, WY, 700);
+
+    if (!alive()) return;
+    activateStep(steps, 1);
+    stepEl.textContent = '② Proxy Cache: SHA-256(URI + Content-Type + body) — key not found → MISS';
+    await wait(900);
+
+    if (!alive()) return;
+    activateStep(steps, 2);
+    stepEl.textContent = '③ Cache forwards full QUERY (with body intact) to Origin Server';
+    setPkt('fpkt-b', 'var(--purple)', '→ origin');
+    await animGrp('fpkt-b', PX, WY, SX, WY, 700);
+    await wait(500);
+
+    if (!alive()) return;
+    activateStep(steps, 3);
+    stepEl.textContent = '④ 200 OK — proxy stores response under SHA-256 key, delivers to client (X-Cache: MISS)';
+    setPkt('fpkt-c', 'var(--green)', '200 OK');
+    await animGrp('fpkt-c', SX, RY, CX, RY, 900);
+    if (alive()) stepEl.textContent = '✓ Done — next identical QUERY returns X-Cache: HIT (try the HIT flow!)';
+
+  } else if (type === 'hit') {
+    activateStep(steps, 0);
+    stepEl.textContent = '① Same QUERY again — identical URI, Content-Type, and body';
+    setPkt('fpkt-a', 'var(--blue)', 'QUERY');
+    if (!alive()) return;
+    await animGrp('fpkt-a', CX, WY, PX, WY, 700);
+
+    if (!alive()) return;
+    activateStep(steps, 1);
+    stepEl.textContent = '② Cache computes key — SHA-256 matches stored entry → HIT! Origin not contacted';
+    await wait(900);
+
+    if (!alive()) return;
+    activateStep(steps, 2);
+    activateStep(steps, 3);
+    stepEl.textContent = '③ Cached response served directly to client — zero backend calls';
+    setPkt('fpkt-c', 'var(--green)', '200 HIT');
+    await animGrp('fpkt-c', PX, RY, CX, RY, 600);
+    if (alive()) stepEl.textContent = '⚡ X-Cache: HIT — sub-millisecond latency, origin never called';
+
+  } else {
+    // 415 Negotiate
+    activateStep(steps, 0);
+    stepEl.textContent = '① QUERY sent with Content-Type: application/xml (unsupported format)';
+    setPkt('fpkt-a', 'var(--orange)', 'QUERY XML');
+    if (!alive()) return;
+    await animGrp('fpkt-a', CX, WY, PX, WY, 700);
+
+    if (!alive()) return;
+    activateStep(steps, 1);
+    stepEl.textContent = '② Cache: XML key not in cache (format-aware keying) — MISS, forwarding';
+    await wait(900);
+
+    if (!alive()) return;
+    activateStep(steps, 2);
+    stepEl.textContent = '③ Cache forwards QUERY + XML body to Origin Server';
+    setPkt('fpkt-b', 'var(--orange)', '→ origin');
+    await animGrp('fpkt-b', PX, WY, SX, WY, 700);
+    await wait(500);
+
+    if (!alive()) return;
+    activateStep(steps, 3);
+    stepEl.textContent = '④ 415 Unsupported Media Type + Accept-Query: application/json, application/graphql';
+    setPkt('fpkt-c', 'var(--red)', '415');
+    await animGrp('fpkt-c', SX, RY, CX, RY, 900);
+    if (alive()) stepEl.textContent = '✗ Format rejected — client should retry with a type listed in Accept-Query';
+  }
 }
 
 // ── Cache animation (Caching tab) ────────────────────────────────────────────
