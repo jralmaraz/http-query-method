@@ -2,7 +2,7 @@
   "standards": [
     {
       "id": "rfc10008",
-      "name": "RFC 10008 — The HTTP QUERY Method",
+      "name": "RFC 10008 \u2014 The HTTP QUERY Method",
       "datatracker_id": "rfc10008",
       "last_known_rev": "RFC",
       "implemented_rev": "RFC",
@@ -14,7 +14,7 @@
     },
     {
       "id": "rfc9110",
-      "name": "RFC 9110 — HTTP Semantics",
+      "name": "RFC 9110 \u2014 HTTP Semantics",
       "datatracker_id": "rfc9110",
       "last_known_rev": "RFC",
       "implemented_rev": "RFC",
@@ -26,7 +26,7 @@
     },
     {
       "id": "rfc7234",
-      "name": "RFC 7234 — HTTP/1.1 Caching",
+      "name": "RFC 7234 \u2014 HTTP/1.1 Caching",
       "datatracker_id": "rfc7234",
       "last_known_rev": "RFC",
       "implemented_rev": "RFC",
@@ -38,7 +38,7 @@
     },
     {
       "id": "rfc8288",
-      "name": "RFC 8288 — Web Linking (Content-Location semantics)",
+      "name": "RFC 8288 \u2014 Web Linking (Content-Location semantics)",
       "datatracker_id": "rfc8288",
       "last_known_rev": "RFC",
       "implemented_rev": null,
@@ -46,11 +46,11 @@
       "source_repo": null,
       "status": "published",
       "poc_status": "monitoring",
-      "notes": "Content-Location and Location header semantics referenced in RFC 10008 §2.3 and §2.4. Not yet implemented as a separate package."
+      "notes": "Content-Location and Location header semantics referenced in RFC 10008 \u00a72.3 and \u00a72.4. Not yet implemented as a separate package."
     },
     {
       "id": "rfc7807",
-      "name": "RFC 7807 — Problem Details for HTTP APIs",
+      "name": "RFC 7807 \u2014 Problem Details for HTTP APIs",
       "datatracker_id": "rfc7807",
       "last_known_rev": "RFC",
       "implemented_rev": null,
@@ -59,6 +59,81 @@
       "status": "published",
       "poc_status": "monitoring",
       "notes": "Error responses in pkg/query could adopt application/problem+json format. Currently plain text."
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search",
+      "label": "No-Vary-Search HTTP Caching Extension",
+      "short": "No-Vary-Search",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "07",
+      "implemented_rev": null,
+      "status": "active-draft",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-no-vary-search/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-ietf-httpbis-no-vary-search/",
+      "source_repo": null,
+      "impact": "Monitors: allows servers to declare that certain URI query string parameters do not affect cache semantics. QUERY method uses body-based cache keys (SHA-256 of body) rather than URI query params \u2014 the two mechanisms are orthogonal. No-Vary-Search affects GET/HEAD caching; QUERY caching is governed by RFC 10008 \u00a79 body-keyed cache. Worth tracking in case HTTPbis extends this to QUERY-method cache behaviour.",
+      "used_in": [],
+      "_triage": "2026-08-07: not-applicable to current implementation. URI query params are irrelevant to QUERY's body-keyed caching. Monitor for any RFC 10008 interaction notes in later revisions."
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp",
+      "label": "Template-Driven HTTP CONNECT Proxying for TCP",
+      "short": "CONNECT-TCP",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "12",
+      "implemented_rev": null,
+      "status": "not-applicable",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-connect-tcp/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-ietf-httpbis-connect-tcp/",
+      "source_repo": null,
+      "impact": "TCP tunnelling via HTTP CONNECT. No intersection with QUERY method semantics (safe, idempotent, cacheable request with body). Not applicable.",
+      "used_in": [],
+      "_triage": "2026-08-07: not-applicable. TCP proxy tunnelling is entirely orthogonal to QUERY method semantics."
+    },
+    {
+      "id": "draft-ietf-httpbis-incremental",
+      "label": "Incremental Forwarding of HTTP Messages",
+      "short": "Incremental",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "04",
+      "implemented_rev": null,
+      "status": "not-applicable",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-incremental/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-ietf-httpbis-incremental/",
+      "source_repo": null,
+      "impact": "Defines an Incremental HTTP header field instructing intermediaries to forward messages incrementally (streaming). QUERY responses could be large (DB result sets), but RFC 10008 does not define streaming semantics and pkg/query returns complete responses. Not applicable to current scope.",
+      "used_in": [],
+      "_triage": "2026-08-07: not-applicable. Intermediary streaming is orthogonal to QUERY method definition. Could revisit if a streaming QUERY variant is explored."
+    },
+    {
+      "id": "draft-schinazi-httpbis-ohttp-pfs",
+      "label": "Perfect Forward Secrecy Extension to Oblivious HTTP",
+      "short": "OHTTP-PFS",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "01",
+      "implemented_rev": null,
+      "status": "not-applicable",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-schinazi-httpbis-ohttp-pfs/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-schinazi-httpbis-ohttp-pfs/",
+      "source_repo": null,
+      "impact": "Oblivious HTTP extension for forward secrecy. Privacy/transport layer, no intersection with QUERY method semantics. Not applicable.",
+      "used_in": [],
+      "_triage": "2026-08-07: not-applicable. Privacy transport extension unrelated to QUERY method."
+    },
+    {
+      "id": "draft-hardt-httpbis-signature-key",
+      "label": "HTTP Signature Keys",
+      "short": "HTTPSig-Keys",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "08",
+      "implemented_rev": null,
+      "status": "not-applicable",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-hardt-httpbis-signature-key/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-hardt-httpbis-signature-key/",
+      "source_repo": null,
+      "impact": "HTTP header fields for distributing public keys used with HTTP Message Signatures (RFC 9421). Authentication/integrity layer \u2014 no intersection with QUERY method caching, body semantics, or safe/idempotent properties. Not applicable.",
+      "used_in": [],
+      "_triage": "2026-08-07: not-applicable. Key distribution for HTTP signatures is orthogonal to QUERY method semantics."
     }
   ],
   "wg_feeds": [
