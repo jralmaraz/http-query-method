@@ -2,6 +2,8 @@
 
 A Go implementation and interactive browser demo of [RFC 10008](https://www.rfc-editor.org/rfc/rfc10008) — the HTTP QUERY method. QUERY is a safe, idempotent, cacheable HTTP method that accepts a request body, filling the gap between GET and POST for complex search APIs.
 
+**Live demo:** https://http-query-method.pages.dev/
+
 ## What is QUERY?
 
 | Property | GET | **QUERY** | POST |
