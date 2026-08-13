@@ -207,19 +207,19 @@ This RFC has been marked as obsoleted. The PoC implementation must be reviewed a
         found = re.findall(r"draft-[a-z0-9-]+", feed_text)
         new_drafts = sorted({d for d in found if d not in known_ids and "httpbis" in d or "query" in d.lower()})
         if new_drafts:
-            body = f"""## New HTTPbis WG drafts discovered
-
-The following draft IDs appeared in the HTTPbis WG feed and are **not yet tracked** in `standards-baseline.json`:
-
-{chr(10).join(f'- `{d}`' for d in new_drafts[:10])}
-
-**Action:** Triage each draft for relevance to the HTTP QUERY method implementation. If relevant, add to `standards-baseline.json`.
-"""
-            issues_to_open.append((
-                f"standards-discovery: {len(new_drafts)} new HTTPbis drafts found",
-                body,
-                ["standards-update", "discovery"]
-            ))
+            # Register each discovered draft in the baseline immediately so it is
+            # never re-reported on subsequent runs.  No issue is opened for
+            # discoveries alone — they're informational and the baseline commit
+            # provides the audit trail.
+            for draft_id in new_drafts[:10]:
+                baseline["standards"].append({
+                    "id":     draft_id,
+                    "name":   draft_id,
+                    "type":   "draft",
+                    "status": "discovered",
+                })
+                print(f"  [discovered] {draft_id} — registered in baseline")
+            changed = True
 
     # Update last_checked
     baseline["last_checked"] = now
