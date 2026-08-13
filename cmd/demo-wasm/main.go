@@ -302,7 +302,7 @@ func queryDBDemo(_ js.Value, args []js.Value) interface{} {
 			"response_ct":  "application/json",
 			"execution_plan": map[string]interface{}{
 				"resolver":   "Query.users",
-				"fields":     []string{"id", "name", "dept"},
+				"fields":     []interface{}{"id", "name", "dept"},
 				"complexity": 15,
 			},
 		},
