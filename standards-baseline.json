@@ -134,10 +134,70 @@
       "impact": "HTTP header fields for distributing public keys used with HTTP Message Signatures (RFC 9421). Authentication/integrity layer \u2014 no intersection with QUERY method caching, body semantics, or safe/idempotent properties. Not applicable.",
       "used_in": [],
       "_triage": "2026-08-07: not-applicable. Key distribution for HTTP signatures is orthogonal to QUERY method semantics."
+    },
+    {
+      "id": "draft-ferro-httpbis-apertoid-sig",
+      "name": "draft-ferro-httpbis-apertoid-sig",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ferro-httpbis-apertoid-sig-01",
+      "name": "draft-ferro-httpbis-apertoid-sig-01",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ferro-httpbis-apertoid-sig-02",
+      "name": "draft-ferro-httpbis-apertoid-sig-02",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-hardt-httpbis-signature-key-08",
+      "name": "draft-hardt-httpbis-signature-key-08",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search-08",
+      "name": "draft-ietf-httpbis-no-vary-search-08",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-rfc6265bis",
+      "name": "draft-ietf-httpbis-rfc6265bis",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-unencoded-digest",
+      "name": "draft-ietf-httpbis-unencoded-digest",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination",
+      "name": "draft-rajappa-httpbis-connection-contamination",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-00",
+      "name": "draft-rajappa-httpbis-connection-contamination-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-01",
+      "name": "draft-rajappa-httpbis-connection-contamination-01",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-02"
+  "last_checked": "2026-08-14"
 }
