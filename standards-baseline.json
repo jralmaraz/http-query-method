@@ -194,10 +194,16 @@
       "name": "draft-rajappa-httpbis-connection-contamination-01",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-02",
+      "name": "draft-rajappa-httpbis-connection-contamination-02",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-14"
+  "last_checked": "2026-08-15"
 }
