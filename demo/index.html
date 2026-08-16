@@ -93,7 +93,7 @@
     .code-wrapper { border-radius: 0 0 8px 8px; margin-bottom: 24px; }
 
     /* ── SVG Animation ── */
-    .diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 24px; overflow: hidden; }
+    .diagram { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(56,139,253,.08) 0%, transparent 70%), var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 24px; overflow: hidden; }
     .node-box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
     .node-box.client { stroke: var(--blue); }
     .node-box.server { stroke: var(--green); }
@@ -163,6 +163,7 @@
     /* ── Lead ── */
     .lead { font-size: 15px; line-height: 1.75; color: var(--text-dim); margin-bottom: 24px; }
     .lead strong { color: var(--text); }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
@@ -1367,6 +1368,8 @@ function loadPreset(type) {
 function animPkt(pktId, fromX, toX, y, duration, color) {
   const pkt = document.getElementById(pktId);
   if (!pkt) return Promise.resolve();
+  const cpX = (fromX + toX) / 2;
+  const cpY = y - 22; // bezier arc control point
   return new Promise(resolve => {
     pkt.setAttribute('cx', fromX);
     pkt.setAttribute('cy', y);
@@ -1375,9 +1378,11 @@ function animPkt(pktId, fromX, toX, y, duration, color) {
     const start = performance.now();
     function tick(now) {
       const t = Math.min((now - start) / duration, 1);
-      pkt.setAttribute('cx', fromX + (toX - fromX) * t);
+      const mt = 1 - t;
+      pkt.setAttribute('cx', mt*mt*fromX + 2*mt*t*cpX + t*t*toX);
+      pkt.setAttribute('cy', mt*mt*y + 2*mt*t*cpY + t*t*y);
       if (t < 1) requestAnimationFrame(tick);
-      else { pkt.style.visibility = 'hidden'; resolve(); }
+      else { pkt.style.visibility = 'hidden'; pkt.setAttribute('cy', y); resolve(); }
     }
     requestAnimationFrame(tick);
   });
