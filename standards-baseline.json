@@ -200,10 +200,22 @@
       "name": "draft-rajappa-httpbis-connection-contamination-02",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search-09",
+      "name": "draft-ietf-httpbis-no-vary-search-09",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-secondary-server-certs",
+      "name": "draft-ietf-httpbis-secondary-server-certs",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-15"
+  "last_checked": "2026-08-17"
 }
