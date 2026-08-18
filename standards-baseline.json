@@ -212,10 +212,16 @@
       "name": "draft-ietf-httpbis-secondary-server-certs",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-13",
+      "name": "draft-ietf-httpbis-connect-tcp-13",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-17"
+  "last_checked": "2026-08-18"
 }
