@@ -218,10 +218,28 @@
       "name": "draft-ietf-httpbis-connect-tcp-13",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-03",
+      "name": "draft-rajappa-httpbis-connection-contamination-03",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-04",
+      "name": "draft-rajappa-httpbis-connection-contamination-04",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-05",
+      "name": "draft-rajappa-httpbis-connection-contamination-05",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-18"
+  "last_checked": "2026-08-19"
 }
