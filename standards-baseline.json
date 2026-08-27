@@ -236,10 +236,22 @@
       "name": "draft-rajappa-httpbis-connection-contamination-05",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-rosomakho-httpbis-h3-unbound-data",
+      "name": "draft-rosomakho-httpbis-h3-unbound-data",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rosomakho-httpbis-h3-unbound-data-02",
+      "name": "draft-rosomakho-httpbis-h3-unbound-data-02",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-19"
+  "last_checked": "2026-08-27"
 }
