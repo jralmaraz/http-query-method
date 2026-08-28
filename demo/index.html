@@ -677,6 +677,8 @@ app = Flask(__name__)
       <button class="lang-btn active" onclick="switchLang('cache','go')">Go</button>
       <button class="lang-btn" onclick="switchLang('cache','nginx')">nginx config</button>
       <button class="lang-btn" onclick="switchLang('cache','varnish')">Varnish VCL</button>
+      <button class="lang-btn" onclick="switchLang('cache','tomcat12')">Tomcat 12 (Servlet 6.1)</button>
+      <button class="lang-btn" onclick="switchLang('cache','spring')">Spring Boot 6</button>
     </div>
     <div class="code-wrapper">
       <div class="lang-panel active" id="cache-go">
@@ -722,6 +724,123 @@ handler := cache.<span class="fn">NewCachingHandler</span>(queryHandler, store)
     }
   }
 }</pre>
+      </div>
+      <div class="lang-panel" id="cache-tomcat12">
+<pre><span class="cm">// Apache Tomcat 12 + Servlet 6.1 — native QUERY method support</span>
+<span class="cm">// apache/tomcat#1026 merged July 1 2026; requires Tomcat 12.0.x + Servlet 6.1 API</span>
+<span class="cm">// Tomcat 12 is the FIRST Java servlet container to ship native doQuery() dispatch.</span>
+
+<span class="kw">import</span> jakarta.servlet.annotation.WebServlet;
+<span class="kw">import</span> jakarta.servlet.http.*;
+<span class="kw">import</span> java.io.IOException;
+<span class="kw">import</span> java.security.MessageDigest;
+<span class="kw">import</span> java.util.HexFormat;
+<span class="kw">import</span> java.util.concurrent.ConcurrentHashMap;
+
+<span class="kw">@WebServlet</span>(<span class="str">"/api/users"</span>)
+<span class="kw">public class</span> <span class="nm">UserQueryServlet</span> <span class="kw">extends</span> HttpServlet {
+
+    <span class="cm">// Simple in-process cache — replace with Ehcache / Caffeine in production</span>
+    <span class="kw">private final</span> ConcurrentHashMap&lt;String, byte[]&gt; cache = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
+
+    <span class="cm">// Tomcat 12 dispatches QUERY to doQuery() — override like doGet() / doPost()</span>
+    <span class="kw">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doQuery</span>(HttpServletRequest req, HttpServletResponse resp)
+            <span class="kw">throws</span> IOException {
+
+        String ct = req.getContentType();
+        <span class="kw">if</span> (ct == <span class="nm">null</span> || !ct.contains(<span class="str">"application/json"</span>)) {
+            resp.setStatus(<span class="nm">415</span>);
+            resp.setHeader(<span class="str">"Accept-Query"</span>, <span class="str">"application/json"</span>); <span class="cm">// RFC 10008 §3</span>
+            <span class="kw">return</span>;
+        }
+
+        <span class="kw">byte</span>[] body = req.getInputStream().<span class="fn">readAllBytes</span>();
+
+        <span class="cm">// RFC 10008 §2.2 — body-keyed cache key (SHA-256 of URI + CT + body)</span>
+        String cacheKey = <span class="fn">sha256Hex</span>(
+            (req.getRequestURI() + <span class="str">"\0"</span> + ct + <span class="str">"\0"</span>).getBytes() ,body);
+
+        byte[] cached = cache.<span class="fn">get</span>(cacheKey);
+        <span class="kw">if</span> (cached != <span class="nm">null</span>) {
+            resp.setContentType(<span class="str">"application/json"</span>);
+            resp.setHeader(<span class="str">"X-Cache"</span>, <span class="str">"HIT"</span>);
+            resp.getOutputStream().<span class="fn">write</span>(cached);
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// QUERY is safe + idempotent → no side effects; safe to retry</span>
+        byte[] result = userRepository.<span class="fn">search</span>(body);
+        cache.<span class="fn">put</span>(cacheKey, result);
+
+        resp.setStatus(<span class="nm">200</span>);
+        resp.setContentType(<span class="str">"application/json"</span>);
+        resp.setHeader(<span class="str">"Cache-Control"</span>, <span class="str">"max-age=300"</span>);
+        resp.setHeader(<span class="str">"Content-Location"</span>, <span class="str">"/api/users/results/"</span> + cacheKey); <span class="cm">// RFC 10008 §4</span>
+        resp.setHeader(<span class="str">"X-Cache"</span>, <span class="str">"MISS"</span>);
+        resp.getOutputStream().<span class="fn">write</span>(result);
+    }
+
+    <span class="kw">private</span> String <span class="fn">sha256Hex</span>(byte[]... parts) <span class="kw">throws</span> IOException {
+        <span class="kw">try</span> {
+            <span class="kw">var</span> md = MessageDigest.<span class="fn">getInstance</span>(<span class="str">"SHA-256"</span>);
+            <span class="kw">for</span> (<span class="kw">var</span> p : parts) md.<span class="fn">update</span>(p);
+            <span class="kw">return</span> HexFormat.<span class="fn">of</span>().<span class="fn">formatHex</span>(md.<span class="fn">digest</span>());
+        } <span class="kw">catch</span> (Exception e) { <span class="kw">throw new</span> IOException(e); }
+    }
+}</pre>
+      </div>
+      <div class="lang-panel" id="cache-spring">
+<pre><span class="cm">// Spring Boot 6 — QUERY caching handler</span>
+<span class="cm">// Spring Framework issue #36988 closed as "not planned" — @QueryMapping annotation</span>
+<span class="cm">// cannot be added because @QueryMapping is already claimed by Spring GraphQL.</span>
+<span class="cm">// Community-endorsed workaround (confirmed by Spring team): RequestMethod.valueOf("QUERY")</span>
+<span class="cm">// This matches how @RequestMapping resolves any custom HTTP method name.</span>
+
+<span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/api/users"</span>)
+<span class="kw">public class</span> <span class="nm">UserQueryController</span> {
+
+    <span class="kw">private final</span> UserService userService;
+    <span class="kw">private final</span> Cache&lt;String, List&lt;User&gt;&gt; queryCache;  <span class="cm">// Caffeine / Ehcache</span>
+
+    <span class="cm">// No @QueryMapping — use RequestMethod.valueOf("QUERY") workaround</span>
+    <span class="kw">@RequestMapping</span>(method = RequestMethod.<span class="fn">valueOf</span>(<span class="str">"QUERY"</span>),
+                    consumes = MediaType.APPLICATION_JSON_VALUE,
+                    produces = MediaType.APPLICATION_JSON_VALUE)
+    <span class="kw">public</span> ResponseEntity&lt;List&lt;User&gt;&gt; <span class="fn">queryUsers</span>(<span class="kw">@RequestBody</span> UserFilter filter) {
+
+        <span class="cm">// RFC 10008 §2.2 — body-keyed cache: use deterministic filter key</span>
+        String cacheKey = filter.<span class="fn">cacheKey</span>();  <span class="cm">// SHA-256(canonical JSON) of filter</span>
+
+        List&lt;User&gt; cached = queryCache.<span class="fn">getIfPresent</span>(cacheKey);
+        <span class="kw">if</span> (cached != <span class="nm">null</span>) {
+            <span class="kw">return</span> ResponseEntity.<span class="fn">ok</span>()
+                .header(<span class="str">"X-Cache"</span>, <span class="str">"HIT"</span>)
+                .header(<span class="str">"Content-Location"</span>, <span class="str">"/api/users/results/"</span> + cacheKey)
+                .body(cached);
+        }
+
+        <span class="cm">// QUERY is idempotent — safe to run under Spring's @Cacheable as well</span>
+        List&lt;User&gt; results = userService.<span class="fn">search</span>(filter);
+        queryCache.<span class="fn">put</span>(cacheKey, results);
+
+        <span class="kw">return</span> ResponseEntity.<span class="fn">ok</span>()
+            .header(<span class="str">"Cache-Control"</span>, <span class="str">"max-age=300"</span>)
+            .header(<span class="str">"Content-Location"</span>, <span class="str">"/api/users/results/"</span> + cacheKey) <span class="cm">// RFC 10008 §4</span>
+            .header(<span class="str">"X-Cache"</span>, <span class="str">"MISS"</span>)
+            .body(results);
+    }
+}
+
+<span class="cm">// RestClient (Spring 6.1+) on the calling side — no special setup needed</span>
+<span class="kw">var</span> results = RestClient.<span class="fn">create</span>()
+    .method(HttpMethod.<span class="fn">valueOf</span>(<span class="str">"QUERY"</span>))
+    .uri(<span class="str">"https://api.example.com/api/users"</span>)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(filter)
+    .retrieve()
+    .body(<span class="kw">new</span> ParameterizedTypeReference&lt;List&lt;User&gt;&gt;() {});</pre>
       </div>
       <div class="lang-panel" id="cache-varnish">
 <pre><span class="cm">// Varnish VCL — full QUERY caching with body-keyed lookup</span>
@@ -1245,6 +1364,52 @@ app.all(<span class="str">'/documents'</span>, <span class="kw">async</span> (re
         <td style="text-align:center;font-size:10px;white-space:nowrap"><span style="color:var(--muted)">monitoring</span></td>
       </tr>
     </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ecosystem Adoption</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Server-side and framework support as of 2026-08-29. Tracked in <code>standards-baseline.json → ecosystem_adoption</code>.</p>
+    <table class="compare-table" style="font-size:12.5px">
+      <tr>
+        <th>Implementation</th>
+        <th>Status</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Apache Tomcat 12</strong></td>
+        <td><span style="color:var(--green)">&#x2705; Shipped</span></td>
+        <td style="font-size:11px">
+          <a href="https://github.com/apache/tomcat/pull/1026" target="_blank" style="color:var(--blue)">apache/tomcat#1026</a> merged July 1, 2026.
+          Native <code>doQuery()</code> dispatch in <code>HttpServlet</code> (Servlet 6.1 API required).
+          Override <code>doQuery()</code> exactly like <code>doGet()</code> — no workarounds needed.
+          Minimum: <strong>Tomcat 12.0.x</strong>. First Java servlet container with native support.
+        </td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Spring Framework MVC</strong></td>
+        <td><span style="color:var(--red)">&#x274C; Not planned</span></td>
+        <td style="font-size:11px">
+          <a href="https://github.com/spring-projects/spring-framework/issues/36988" target="_blank" style="color:var(--blue)">spring-projects/spring-framework#36988</a> closed as "not planned" (duplicate).
+          <code>@QueryMapping</code> annotation cannot be added — Spring GraphQL already claims that name.
+          <strong>Community-endorsed workaround</strong> (Spring team confirmed):
+          <code>@RequestMapping(method = RequestMethod.valueOf("QUERY"))</code> on the server side,
+          <code>RestClient.create().method(HttpMethod.valueOf("QUERY"))</code> on the client side.
+          This is what all existing demo code in this project uses — it is correct and stable.
+        </td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Web Browsers</strong><br><span style="font-size:10px;color:var(--muted)">(Fetch API / XHR)</span></td>
+        <td><span style="color:var(--orange)">&#x1F504; Under evaluation</span></td>
+        <td style="font-size:11px">
+          No browser vendor has shipped Fetch API or XMLHttpRequest support for QUERY as of 2026-08-29.
+          CORS preflight would require servers to include <code>QUERY</code> in <code>Access-Control-Allow-Methods</code>.
+          The safe + idempotent semantics are browser-friendly; no public implementation timeline yet.
+        </td>
+      </tr>
+    </table>
+    <div class="callout warn" style="margin-top:16px;font-size:12.5px">
+      <strong>Spring Framework note:</strong> Issue #36988 is <strong>closed, not open</strong>. There is no dedicated <code>@QueryMapping</code> annotation coming to Spring MVC. The <code>RequestMethod.valueOf("QUERY")</code> pattern in this demo's Java examples is the correct, Spring-team-endorsed approach — not a temporary workaround waiting for a "real" fix. Use it with confidence.
+    </div>
   </div>
 
   <div class="card">

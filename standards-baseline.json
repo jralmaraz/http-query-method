@@ -10,7 +10,7 @@
       "source_repo": "https://github.com/nicowillis/draft-httpbis-safe-method-w-body",
       "status": "published",
       "poc_status": "implemented",
-      "notes": "Core RFC implemented in pkg/query and pkg/cache. Published October 2024."
+      "notes": "Core RFC implemented in pkg/query and pkg/cache. Published June 2026."
     },
     {
       "id": "rfc9110",
@@ -65,7 +65,7 @@
       "label": "No-Vary-Search HTTP Caching Extension",
       "short": "No-Vary-Search",
       "wg": "IETF HTTPbis WG",
-      "last_known_rev": "07",
+      "last_known_rev": "09",
       "implemented_rev": null,
       "status": "active-draft",
       "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-no-vary-search/",
@@ -73,14 +73,14 @@
       "source_repo": null,
       "impact": "Monitors: allows servers to declare that certain URI query string parameters do not affect cache semantics. QUERY method uses body-based cache keys (SHA-256 of body) rather than URI query params \u2014 the two mechanisms are orthogonal. No-Vary-Search affects GET/HEAD caching; QUERY caching is governed by RFC 10008 \u00a79 body-keyed cache. Worth tracking in case HTTPbis extends this to QUERY-method cache behaviour.",
       "used_in": [],
-      "_triage": "2026-08-07: not-applicable to current implementation. URI query params are irrelevant to QUERY's body-keyed caching. Monitor for any RFC 10008 interaction notes in later revisions."
+      "_triage": "2026-08-07: not-applicable to current implementation. URI query params are irrelevant to QUERY's body-keyed caching. Monitor for any RFC 10008 interaction notes in later revisions. 2026-08-29: updated last_known_rev 07\u219209."
     },
     {
       "id": "draft-ietf-httpbis-connect-tcp",
       "label": "Template-Driven HTTP CONNECT Proxying for TCP",
       "short": "CONNECT-TCP",
       "wg": "IETF HTTPbis WG",
-      "last_known_rev": "12",
+      "last_known_rev": "13",
       "implemented_rev": null,
       "status": "not-applicable",
       "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-connect-tcp/",
@@ -88,7 +88,7 @@
       "source_repo": null,
       "impact": "TCP tunnelling via HTTP CONNECT. No intersection with QUERY method semantics (safe, idempotent, cacheable request with body). Not applicable.",
       "used_in": [],
-      "_triage": "2026-08-07: not-applicable. TCP proxy tunnelling is entirely orthogonal to QUERY method semantics."
+      "_triage": "2026-08-07: not-applicable. TCP proxy tunnelling is entirely orthogonal to QUERY method semantics. 2026-08-29: updated last_known_rev 12→13."
     },
     {
       "id": "draft-ietf-httpbis-incremental",
@@ -136,120 +136,87 @@
       "_triage": "2026-08-07: not-applicable. Key distribution for HTTP signatures is orthogonal to QUERY method semantics."
     },
     {
-      "id": "draft-ferro-httpbis-apertoid-sig",
-      "name": "draft-ferro-httpbis-apertoid-sig",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ferro-httpbis-apertoid-sig-01",
-      "name": "draft-ferro-httpbis-apertoid-sig-01",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ferro-httpbis-apertoid-sig-02",
-      "name": "draft-ferro-httpbis-apertoid-sig-02",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-hardt-httpbis-signature-key-08",
-      "name": "draft-hardt-httpbis-signature-key-08",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ietf-httpbis-no-vary-search-08",
-      "name": "draft-ietf-httpbis-no-vary-search-08",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ietf-httpbis-rfc6265bis",
-      "name": "draft-ietf-httpbis-rfc6265bis",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
       "id": "draft-ietf-httpbis-unencoded-digest",
-      "name": "draft-ietf-httpbis-unencoded-digest",
-      "type": "draft",
-      "status": "discovered"
+      "label": "Unencoded Content Digest for HTTP",
+      "short": "Unencoded-Digest",
+      "wg": "IETF HTTPbis WG",
+      "last_known_rev": "03",
+      "implemented_rev": null,
+      "status": "monitoring",
+      "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-unencoded-digest/",
+      "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-ietf-httpbis-unencoded-digest/",
+      "source_repo": null,
+      "impact": "MONITORING — defines a Repr-Digest header expressing content digests over unencoded (pre-Content-Encoding) representations. Potentially relevant to QUERY body integrity: a client could include Repr-Digest over the QUERY request body so the server can verify body integrity before cache-key computation. RFC 10008 does not mandate body integrity checking, but it is a natural hardening of the body-keyed cache model. Worth tracking for any future alignment with body-keyed cache key security.",
+      "used_in": [],
+      "_triage": "2026-08-29: assessed. Not currently applicable — RFC 10008 cache key uses SHA-256 of the raw body directly; no separate Repr-Digest requirement. Monitor for HTTPbis guidance on integrating Repr-Digest into the QUERY body-key computation."
+    },
+    {
+      "id": "draft-ferro-httpbis-apertoid-sig",
+      "label": "draft-ferro-httpbis-apertoid-sig (all revisions)",
+      "status": "not-applicable",
+      "impact": "HTTP message signature extension — no intersection with QUERY method semantics.",
+      "_triage": "2026-08-29: dismissed. Versions -00, -01, -02 all consolidated into this single not-applicable entry. Authentication/integrity layer orthogonal to QUERY."
     },
     {
       "id": "draft-rajappa-httpbis-connection-contamination",
-      "name": "draft-rajappa-httpbis-connection-contamination",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-00",
-      "name": "draft-rajappa-httpbis-connection-contamination-00",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-01",
-      "name": "draft-rajappa-httpbis-connection-contamination-01",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-02",
-      "name": "draft-rajappa-httpbis-connection-contamination-02",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ietf-httpbis-no-vary-search-09",
-      "name": "draft-ietf-httpbis-no-vary-search-09",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ietf-httpbis-secondary-server-certs",
-      "name": "draft-ietf-httpbis-secondary-server-certs",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-ietf-httpbis-connect-tcp-13",
-      "name": "draft-ietf-httpbis-connect-tcp-13",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-03",
-      "name": "draft-rajappa-httpbis-connection-contamination-03",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-04",
-      "name": "draft-rajappa-httpbis-connection-contamination-04",
-      "type": "draft",
-      "status": "discovered"
-    },
-    {
-      "id": "draft-rajappa-httpbis-connection-contamination-05",
-      "name": "draft-rajappa-httpbis-connection-contamination-05",
-      "type": "draft",
-      "status": "discovered"
+      "label": "draft-rajappa-httpbis-connection-contamination (all revisions)",
+      "status": "not-applicable",
+      "impact": "TCP connection contamination security analysis — no intersection with QUERY method semantics.",
+      "_triage": "2026-08-29: dismissed. Versions -00 through -05 consolidated. HTTP connection security is orthogonal to QUERY safe/idempotent/cacheable semantics."
     },
     {
       "id": "draft-rosomakho-httpbis-h3-unbound-data",
-      "name": "draft-rosomakho-httpbis-h3-unbound-data",
-      "type": "draft",
-      "status": "discovered"
+      "label": "draft-rosomakho-httpbis-h3-unbound-data (all revisions)",
+      "status": "not-applicable",
+      "impact": "HTTP/3 unbound data streams — transport layer, no intersection with QUERY method semantics.",
+      "_triage": "2026-08-29: dismissed. Versions -00, -02 consolidated. HTTP/3 transport extension orthogonal to QUERY."
     },
     {
-      "id": "draft-rosomakho-httpbis-h3-unbound-data-02",
-      "name": "draft-rosomakho-httpbis-h3-unbound-data-02",
-      "type": "draft",
-      "status": "discovered"
+      "id": "draft-ietf-httpbis-rfc6265bis",
+      "label": "HTTP State Management Mechanism (Cookies bis)",
+      "status": "not-applicable",
+      "impact": "Cookie semantics update — no intersection with QUERY method.",
+      "_triage": "2026-08-29: dismissed. Cookie state management is unrelated to QUERY safe/idempotent/cacheable semantics."
+    },
+    {
+      "id": "draft-ietf-httpbis-secondary-server-certs",
+      "label": "Secondary Certificate Authentication of HTTP Servers",
+      "status": "not-applicable",
+      "impact": "TLS secondary certificate authentication — no intersection with QUERY method semantics.",
+      "_triage": "2026-08-29: dismissed. TLS-layer authentication is orthogonal to QUERY."
     }
   ],
+  "ecosystem_adoption": {
+    "_comment": "Server-side and framework QUERY support tracking. Updated manually when implementations ship.",
+    "last_checked": "2026-08-29",
+    "entries": [
+      {
+        "id": "apache-tomcat-12",
+        "name": "Apache Tomcat 12",
+        "status": "shipped",
+        "status_detail": "QUERY method added to HttpServlet doXxx dispatch table (doQuery() override) via apache/tomcat#1026, merged July 1, 2026. Requires Servlet 6.1 API. Tomcat 12.0.x is the minimum version.",
+        "issue_url": "https://github.com/apache/tomcat/pull/1026",
+        "shipped_date": "2026-07-01",
+        "notes": "First major Java servlet container to ship native QUERY method support. Override doQuery(HttpServletRequest, HttpServletResponse) in a Servlet 6.1 HttpServlet subclass — no RequestMethod.valueOf workaround needed."
+      },
+      {
+        "id": "spring-framework-mvc",
+        "name": "Spring Framework MVC",
+        "status": "not-planned",
+        "status_detail": "Spring Framework GitHub issue #36988 (add first-class @QueryMapping annotation) closed as 'not planned' / duplicate. Root cause: @QueryMapping is already claimed by Spring GraphQL — using the same annotation name for Spring MVC would create an irresolvable conflict. No dedicated annotation is planned.",
+        "issue_url": "https://github.com/spring-projects/spring-framework/issues/36988",
+        "workaround": "@RequestMapping(method = RequestMethod.valueOf(\"QUERY\")) — this is the community-endorsed and Spring-team-confirmed workaround. The existing demo code at demo/index.html (Java panels) already implements this correctly. RestClient.create().method(HttpMethod.valueOf(\"QUERY\")) on the client side.",
+        "notes": "The workaround is stable, correct, and already in use in this demo. No breaking change is expected — Spring MVC's RequestMethod resolution is fully extensible for non-standard HTTP methods."
+      },
+      {
+        "id": "browsers",
+        "name": "Web Browsers (Fetch API / XMLHttpRequest)",
+        "status": "under-evaluation",
+        "status_detail": "No browser vendor has shipped Fetch API or XMLHttpRequest support for QUERY method as of 2026-08-29. Browser security model (CORS preflight for non-simple methods) means QUERY would require explicit server Allow header support. Under evaluation — no public timeline.",
+        "notes": "QUERY from a browser would require the server to include 'QUERY' in Access-Control-Allow-Methods. The safe+idempotent semantics are browser-friendly but no vendor has prioritised implementation."
+      }
+    ]
+  },
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
