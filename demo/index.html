@@ -1368,47 +1368,226 @@ app.all(<span class="str">'/documents'</span>, <span class="kw">async</span> (re
 
   <div class="card">
     <div class="card-title">Ecosystem Adoption</div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Server-side and framework support as of 2026-08-29. Tracked in <code>standards-baseline.json → ecosystem_adoption</code>.</p>
-    <table class="compare-table" style="font-size:12.5px">
-      <tr>
-        <th>Implementation</th>
-        <th>Status</th>
-        <th>Details</th>
-      </tr>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Researched 2026-08-29 via <a href="https://github.com/jeswr/http-query-adoption" target="_blank" style="color:var(--blue)">jeswr/http-query-adoption</a>, <a href="https://gist.github.com/desiderantes/2c7e657649cb92672d68e580fb69aa1d" target="_blank" style="color:var(--blue)">desiderantes' tracker</a>, and primary issue trackers. Full data in <code>standards-baseline.json → ecosystem_adoption</code>.</p>
+
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Servers &amp; Runtimes</p>
+    <table class="compare-table" style="font-size:12px;margin-bottom:20px">
+      <tr><th>Implementation</th><th>Status</th><th>Details</th></tr>
       <tr>
         <td style="white-space:nowrap"><strong>Apache Tomcat 12</strong></td>
-        <td><span style="color:var(--green)">&#x2705; Shipped</span></td>
-        <td style="font-size:11px">
-          <a href="https://github.com/apache/tomcat/pull/1026" target="_blank" style="color:var(--blue)">apache/tomcat#1026</a> merged July 1, 2026.
-          Native <code>doQuery()</code> dispatch in <code>HttpServlet</code> (Servlet 6.1 API required).
-          Override <code>doQuery()</code> exactly like <code>doGet()</code> — no workarounds needed.
-          Minimum: <strong>Tomcat 12.0.x</strong>. First Java servlet container with native support.
-        </td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Shipped</span></td>
+        <td style="font-size:11px"><a href="https://github.com/apache/tomcat/pull/1026" target="_blank" style="color:var(--blue)">apache/tomcat#1026</a> merged July 1, 2026. Native <code>doQuery()</code> in HttpServlet (Servlet 6.1). First Java container with native support. Requires Tomcat 12.0.x minimum.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Node.js (http)</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Works</span></td>
+        <td style="font-size:11px">Node.js http module has parsed QUERY natively since early 2024 — the http parser imposes no method allowlist. No special config. undici explicit support: <a href="https://github.com/nodejs/undici/issues/5454" target="_blank" style="color:var(--blue)">nodejs/undici#5454</a> (open, body-aware cache key).</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Eclipse Jetty 13</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; PR open</span></td>
+        <td style="font-size:11px"><a href="https://github.com/jetty/jetty.project/pull/15316" target="_blank" style="color:var(--blue)">jetty.project#15316</a> — implements safe+idempotent registration, Accept-Query header, redirect semantics, compression handler integration. Not yet merged.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>nginx</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; PR open</span></td>
+        <td style="font-size:11px"><a href="https://github.com/nginx/nginx/actions/runs/28253982237" target="_blank" style="color:var(--blue)">nginx/nginx#1488</a> — basic QUERY method recognition. Note: <code>proxy_cache_methods GET HEAD QUERY</code> already works as a Varnish/cache config workaround today.</td>
+      </tr>
+    </table>
+
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Frameworks</p>
+    <table class="compare-table" style="font-size:12px;margin-bottom:20px">
+      <tr><th>Framework</th><th>Status</th><th>Details</th></tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>ASP.NET Core / .NET 10</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Shipped</span></td>
+        <td style="font-size:11px">Ships <code>HttpMethods.Query</code> constant, <code>MapMethods()</code>, and <code>[AcceptVerbs]</code> support. First-class — no workarounds.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Quarkus / Vert.x</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Works</span></td>
+        <td style="font-size:11px">Netty-based routing imposes no method restriction. QUERY reaches route handlers without special handling. Route via <code>.method(HttpMethod.valueOf("QUERY"))</code>.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Express.js</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Works</span></td>
+        <td style="font-size:11px"><code>app.all('/path', handler)</code> + <code>if (req.method !== 'QUERY') return res.status(405)</code>. No dedicated <code>app.query()</code> — works today without changes.</td>
       </tr>
       <tr>
         <td style="white-space:nowrap"><strong>Spring Framework MVC</strong></td>
-        <td><span style="color:var(--red)">&#x274C; Not planned</span></td>
-        <td style="font-size:11px">
-          <a href="https://github.com/spring-projects/spring-framework/issues/36988" target="_blank" style="color:var(--blue)">spring-projects/spring-framework#36988</a> closed as "not planned" (duplicate).
-          <code>@QueryMapping</code> annotation cannot be added — Spring GraphQL already claims that name.
-          <strong>Community-endorsed workaround</strong> (Spring team confirmed):
-          <code>@RequestMapping(method = RequestMethod.valueOf("QUERY"))</code> on the server side,
-          <code>RestClient.create().method(HttpMethod.valueOf("QUERY"))</code> on the client side.
-          This is what all existing demo code in this project uses — it is correct and stable.
-        </td>
+        <td style="white-space:nowrap"><span style="color:var(--red)">&#x274C; Not planned</span></td>
+        <td style="font-size:11px"><a href="https://github.com/spring-projects/spring-framework/issues/36988" target="_blank" style="color:var(--blue)">spring-framework#36988</a> closed not-planned. <code>@QueryMapping</code> conflicts with Spring GraphQL. <strong>Workaround (Spring-confirmed):</strong> <code>@RequestMapping(method = RequestMethod.valueOf("QUERY"))</code> — what this demo uses. Stable, correct.</td>
       </tr>
       <tr>
-        <td style="white-space:nowrap"><strong>Web Browsers</strong><br><span style="font-size:10px;color:var(--muted)">(Fetch API / XHR)</span></td>
-        <td><span style="color:var(--orange)">&#x1F504; Under evaluation</span></td>
-        <td style="font-size:11px">
-          No browser vendor has shipped Fetch API or XMLHttpRequest support for QUERY as of 2026-08-29.
-          CORS preflight would require servers to include <code>QUERY</code> in <code>Access-Control-Allow-Methods</code>.
-          The safe + idempotent semantics are browser-friendly; no public implementation timeline yet.
-        </td>
+        <td style="white-space:nowrap"><strong>Fastify</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; Issue open</span></td>
+        <td style="font-size:11px"><a href="https://github.com/fastify/fastify/issues/6807" target="_blank" style="color:var(--blue)">fastify#6807</a> — proposes <code>fastify.query()</code> shorthand, schema validation, lifecycle hooks. <strong>Works today</strong> via <code>fastify.route({method:'QUERY', ...})</code>.</td>
       </tr>
     </table>
+
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Proxies, CDNs &amp; API Tooling</p>
+    <table class="compare-table" style="font-size:12px;margin-bottom:20px">
+      <tr><th>Implementation</th><th>Status</th><th>Details</th></tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Varnish / HAProxy</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Works</span></td>
+        <td style="font-size:11px">Both forward arbitrary methods. Varnish VCL body-keyed caching works today (see Caching tab). HAProxy passes QUERY transparently with no config changes.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Envoy Proxy</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; PRs open</span></td>
+        <td style="font-size:11px">PRs open for HTTP/1, HTTP/2, and HTTP/3 QUERY support. Envoy's codec currently normalises unknown methods in ways that may drop the body or misclassify safety.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Cloudflare Workers</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; Issue open</span></td>
+        <td style="font-size:11px">Issue open for body-keyed QUERY caching in workerd. RFC 10008 was co-authored by Cloudflare engineers — production edge support expected but no ship date.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>OpenAPI 3.2</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--green)">&#x2705; Shipped</span></td>
+        <td style="font-size:11px">OpenAPI 3.2 path items formally support QUERY as a method. API specs can now describe QUERY endpoints with full schema, request body, and response definitions.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>OpenSearch / Elasticsearch</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; RFC open</span></td>
+        <td style="font-size:11px"><a href="https://github.com/opensearch-project/OpenSearch/issues/22409" target="_blank" style="color:var(--blue)">OpenSearch#22409</a> — RFC to replace <code>POST /_search</code> with <code>QUERY /_search</code>, making all search safe+cacheable. Synchronized rollout with Elasticsearch under discussion.</td>
+      </tr>
+    </table>
+
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Browser &amp; Standards Body Signals</p>
+    <table class="compare-table" style="font-size:12px">
+      <tr><th>Body / Vendor</th><th>Status</th><th>Details</th></tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>WHATWG Fetch</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--orange)">&#x1F504; Issue open</span></td>
+        <td style="font-size:11px"><a href="https://github.com/whatwg/fetch/issues/1938" target="_blank" style="color:var(--blue)">whatwg/fetch#1938</a> (June 30, 2026) — three open integration questions: (1) method normalization, (2) CORS preflight by design, (3) body-keyed cache model. See "Path to Browser Support" below.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Mozilla Firefox</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--purple)">&#x1F4AC; Position pending</span></td>
+        <td style="font-size:11px"><a href="https://github.com/mozilla/standards-positions/issues/1430" target="_blank" style="color:var(--blue)">mozilla/standards-positions#1430</a> — position requested July 2026. No position published. Not requesting immediate ship — guiding WHATWG Fetch/HTML work.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>WebKit / Safari</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--purple)">&#x1F4AC; Position pending</span></td>
+        <td style="font-size:11px"><a href="https://github.com/WebKit/standards-positions/issues/692" target="_blank" style="color:var(--blue)">WebKit/standards-positions#692</a> — companion to Mozilla #1430 and Fetch #1938. No position published.</td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap"><strong>Chrome / Blink</strong></td>
+        <td style="white-space:nowrap"><span style="color:var(--muted)">&#x2014; No signal</span></td>
+        <td style="font-size:11px">No Chrome Platform Status entry or Intent to Prototype as of 2026-08-29. Chrome does not cache repeated identical QUERY requests — body-keyed caching not implemented. Waiting on WHATWG Fetch #1938.</td>
+      </tr>
+    </table>
+
     <div class="callout warn" style="margin-top:16px;font-size:12.5px">
-      <strong>Spring Framework note:</strong> Issue #36988 is <strong>closed, not open</strong>. There is no dedicated <code>@QueryMapping</code> annotation coming to Spring MVC. The <code>RequestMethod.valueOf("QUERY")</code> pattern in this demo's Java examples is the correct, Spring-team-endorsed approach — not a temporary workaround waiting for a "real" fix. Use it with confidence.
+      <strong>Spring Framework:</strong> Issue #36988 is <strong>closed, not open</strong> — the <code>RequestMethod.valueOf("QUERY")</code> pattern is the correct, stable, Spring-team-endorsed approach. No better option is coming.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Path to Browser Support</div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
+      QUERY is safe, idempotent, and cacheable — the perfect semantics for a browser. Yet browser support involves several independent problems that must each be solved in the right order. Here is what needs to happen, and why it is non-trivial despite QUERY being, on the surface, a simple new HTTP method.
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Phase 1 -->
+      <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:16px;align-items:start">
+        <div style="background:var(--blue);color:#fff;border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">1</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px">WHATWG Fetch Standard update <span style="font-size:11px;font-weight:400;color:var(--orange)">▸ In progress (whatwg/fetch#1938)</span></div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim);margin-bottom:10px">
+            Before any browser can implement QUERY, the WHATWG Fetch Standard must be updated. Three questions must be resolved:
+          </p>
+          <div style="background:var(--code-bg);border-radius:6px;padding:14px;font-size:12px;line-height:1.8">
+            <strong style="color:var(--purple)">① Method normalization footgun</strong><br>
+            The Fetch spec currently uppercases only DELETE, GET, HEAD, OPTIONS, POST, PUT. So <code>fetch(url, {method: 'query'})</code> sends lowercase <code>query</code> — not <code>QUERY</code>. Servers that do case-sensitive method matching will reject it silently. QUERY must be added to the "<em>normalize a method</em>" algorithm to prevent this footgun.<br><br>
+            <strong style="color:var(--orange)">② CORS — by design, no change needed</strong><br>
+            QUERY is not CORS-safelisted, so every cross-origin QUERY triggers a preflight (OPTIONS). RFC 10008 §4 explicitly expects this. Servers must include <code>Access-Control-Allow-Methods: QUERY</code> in their preflight response. This is already the correct behaviour — no Fetch spec change required for CORS.<br><br>
+            <strong style="color:var(--red)">③ Body-keyed cache — the hard one</strong><br>
+            RFC 10008 §2.7 makes QUERY responses cacheable with a key that incorporates the request body. The Fetch spec's HTTP-cache model is URL-keyed — no existing mechanism for body-keyed entries. Must decide: does Fetch reflect body-keyed caching, or leave it entirely to the HTTP layer? Currently, Chrome and Firefox both cache GET but <em>neither</em> caches a repeated identical QUERY.
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:16px;align-items:start">
+        <div style="background:var(--purple);color:#fff;border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">2</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px">Vendor standards positions <span style="font-size:11px;font-weight:400;color:var(--orange)">▸ In progress (Mozilla #1430, WebKit #692)</span></div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim)">
+            Mozilla, WebKit, and Chrome must each publish a formal position before their engineers begin implementation. These positions signal: "<em>we think this is a good idea and we intend to implement it</em>." Without all three, the feature stalls because the browser interop requirement (identical behaviour across engines) cannot be guaranteed. The positions were requested in late June/July 2026 — expect 2–6 months for each engine's review process.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:16px;align-items:start">
+        <div style="background:var(--green);color:#111;border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">3</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px">HTTP stack implementation <span style="font-size:11px;font-weight:400;color:var(--muted)">▸ Not started</span></div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim);margin-bottom:10px">
+            Four distinct browser subsystems each require changes:
+          </p>
+          <div class="info-grid" style="gap:10px">
+            <div class="info-box blue" style="padding:12px">
+              <div class="ibt">HTTP method dispatch</div>
+              <div class="ibv" style="font-size:11px">Register QUERY as safe + idempotent in the browser's HTTP engine. This unlocks safe-retry on timeout/5xx and correct interaction with preloading.</div>
+            </div>
+            <div class="info-box orange" style="padding:12px">
+              <div class="ibt">Body-keyed HTTP cache</div>
+              <div class="ibv" style="font-size:11px">The most architecturally novel piece: browsers must extend the HTTP cache to key QUERY entries on <code>sha256(URI + Content-Type + body)</code>. No existing method does this. Requires memory and disk cache changes in each engine.</div>
+            </div>
+            <div class="info-box purple" style="padding:12px">
+              <div class="ibt">Service Worker Cache API</div>
+              <div class="ibv" style="font-size:11px"><code>cache.put(queryRequest, response)</code> must store and retrieve by body. Current Cache API is URL-keyed per the Fetch spec. A body-keyed variant is a new API surface — needs specification and implementation.</div>
+            </div>
+            <div class="info-box green" style="padding:12px">
+              <div class="ibt">HTML form support</div>
+              <div class="ibv" style="font-size:11px"><code>&lt;form method="QUERY"&gt;</code> does not work — WHATWG HTML lists only <code>GET</code> and <code>POST</code> as valid form methods. Adding QUERY requires both the HTML spec and browser HTML parser to be updated.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:16px;align-items:start">
+        <div style="background:var(--orange);color:#111;border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">4</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px">Web Platform Tests + DevTools <span style="font-size:11px;font-weight:400;color:var(--muted)">▸ Not started</span></div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim)">
+            Cross-browser interoperability is enforced through the WPT (Web Platform Tests) suite. QUERY tests must be written and pass in all three engines before the feature can be considered "interoperable." DevTools updates are also required: the Network panel currently treats body-carrying requests as POST-like (non-cacheable). QUERY needs its own badge showing safe+idempotent+cacheable with the body-keyed cache key visible in the headers inspector.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:16px;align-items:start">
+        <div style="background:var(--muted);color:#fff;border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:justify-content;font-weight:800;font-size:13px;flex-shrink:0;justify-content:center">5</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:6px">Infrastructure catch-up <span style="font-size:11px;font-weight:400;color:var(--muted)">▸ Parallel to Phases 3–4</span></div>
+          <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim)">
+            Browser adoption will instantly expose gaps in the surrounding infrastructure: WAFs that block unknown methods (many enterprise WAFs currently return 405 for anything not in GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS); CSP doesn't restrict methods but tooling may flag QUERY in security scans; API gateways like Kong and AWS API Gateway need QUERY added to their allowed-methods lists; CDN edge caches (Cloudflare, Fastly, Akamai) need body-keyed cache entries. RFC 10008 was co-authored by Cloudflare and Akamai engineers precisely to drive this alignment from the top, but enterprise WAF rules take years to propagate.
+          </p>
+          <div class="callout danger" style="margin-top:12px;font-size:12px">
+            <strong>The WAF problem is real today:</strong> even without browser support, developers deploying QUERY in production report WAFs and API gateways returning 405. Test your stack end-to-end before relying on QUERY in production — see the Hive Security research on the attack surface still catching up.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:20px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Realistic timeline estimate</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;font-size:11px">
+        <div style="text-align:center;padding:10px;background:rgba(79,142,247,.08);border-radius:6px;border:1px solid rgba(79,142,247,.2)"><div style="font-weight:700;color:var(--blue)">2026 H2</div><div style="color:var(--text-dim);margin-top:4px">Vendor positions published. Fetch #1938 consensus.</div></div>
+        <div style="text-align:center;padding:10px;background:rgba(167,139,250,.08);border-radius:6px;border:1px solid rgba(167,139,250,.2)"><div style="font-weight:700;color:var(--purple)">2027 H1</div><div style="color:var(--text-dim);margin-top:4px">First browser lands method dispatch + CORS. WPT tests written.</div></div>
+        <div style="text-align:center;padding:10px;background:rgba(62,207,142,.08);border-radius:6px;border:1px solid rgba(62,207,142,.2)"><div style="font-weight:700;color:var(--green)">2027 H2</div><div style="color:var(--text-dim);margin-top:4px">Body-keyed cache shipped in 1–2 browsers. Interop flag.</div></div>
+        <div style="text-align:center;padding:10px;background:rgba(245,166,35,.08);border-radius:6px;border:1px solid rgba(245,166,35,.2)"><div style="font-weight:700;color:var(--orange)">2028+</div><div style="color:var(--text-dim);margin-top:4px">Baseline interop. WAF / CDN catch-up. &lt;form method="QUERY"&gt;.</div></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px">Estimates based on comparable method/cache changes (e.g. PATCH — RFC 5789, 2010 → broadly supported by 2012; HTTP/2 push → deprecated 2022 despite complexity). Body-keyed cache is the wildcard — it has no precedent in browser engines.</p>
     </div>
   </div>
 
