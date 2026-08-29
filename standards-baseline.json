@@ -88,7 +88,7 @@
       "source_repo": null,
       "impact": "TCP tunnelling via HTTP CONNECT. No intersection with QUERY method semantics (safe, idempotent, cacheable request with body). Not applicable.",
       "used_in": [],
-      "_triage": "2026-08-07: not-applicable. TCP proxy tunnelling is entirely orthogonal to QUERY method semantics. 2026-08-29: updated last_known_rev 12→13."
+      "_triage": "2026-08-07: not-applicable. TCP proxy tunnelling is entirely orthogonal to QUERY method semantics. 2026-08-29: updated last_known_rev 12\u219213."
     },
     {
       "id": "draft-ietf-httpbis-incremental",
@@ -146,44 +146,80 @@
       "datatracker_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-unencoded-digest/",
       "api_url": "https://datatracker.ietf.org/api/v1/doc/document/draft-ietf-httpbis-unencoded-digest/",
       "source_repo": null,
-      "impact": "MONITORING — defines a Repr-Digest header expressing content digests over unencoded (pre-Content-Encoding) representations. Potentially relevant to QUERY body integrity: a client could include Repr-Digest over the QUERY request body so the server can verify body integrity before cache-key computation. RFC 10008 does not mandate body integrity checking, but it is a natural hardening of the body-keyed cache model. Worth tracking for any future alignment with body-keyed cache key security.",
+      "impact": "MONITORING \u2014 defines a Repr-Digest header expressing content digests over unencoded (pre-Content-Encoding) representations. Potentially relevant to QUERY body integrity: a client could include Repr-Digest over the QUERY request body so the server can verify body integrity before cache-key computation. RFC 10008 does not mandate body integrity checking, but it is a natural hardening of the body-keyed cache model. Worth tracking for any future alignment with body-keyed cache key security.",
       "used_in": [],
-      "_triage": "2026-08-29: assessed. Not currently applicable — RFC 10008 cache key uses SHA-256 of the raw body directly; no separate Repr-Digest requirement. Monitor for HTTPbis guidance on integrating Repr-Digest into the QUERY body-key computation."
+      "_triage": "2026-08-29: assessed. Not currently applicable \u2014 RFC 10008 cache key uses SHA-256 of the raw body directly; no separate Repr-Digest requirement. Monitor for HTTPbis guidance on integrating Repr-Digest into the QUERY body-key computation."
     },
     {
       "id": "draft-ferro-httpbis-apertoid-sig",
       "label": "draft-ferro-httpbis-apertoid-sig (all revisions)",
       "status": "not-applicable",
-      "impact": "HTTP message signature extension — no intersection with QUERY method semantics.",
+      "impact": "HTTP message signature extension \u2014 no intersection with QUERY method semantics.",
       "_triage": "2026-08-29: dismissed. Versions -00, -01, -02 all consolidated into this single not-applicable entry. Authentication/integrity layer orthogonal to QUERY."
     },
     {
       "id": "draft-rajappa-httpbis-connection-contamination",
       "label": "draft-rajappa-httpbis-connection-contamination (all revisions)",
       "status": "not-applicable",
-      "impact": "TCP connection contamination security analysis — no intersection with QUERY method semantics.",
+      "impact": "TCP connection contamination security analysis \u2014 no intersection with QUERY method semantics.",
       "_triage": "2026-08-29: dismissed. Versions -00 through -05 consolidated. HTTP connection security is orthogonal to QUERY safe/idempotent/cacheable semantics."
     },
     {
       "id": "draft-rosomakho-httpbis-h3-unbound-data",
       "label": "draft-rosomakho-httpbis-h3-unbound-data (all revisions)",
       "status": "not-applicable",
-      "impact": "HTTP/3 unbound data streams — transport layer, no intersection with QUERY method semantics.",
+      "impact": "HTTP/3 unbound data streams \u2014 transport layer, no intersection with QUERY method semantics.",
       "_triage": "2026-08-29: dismissed. Versions -00, -02 consolidated. HTTP/3 transport extension orthogonal to QUERY."
     },
     {
       "id": "draft-ietf-httpbis-rfc6265bis",
       "label": "HTTP State Management Mechanism (Cookies bis)",
       "status": "not-applicable",
-      "impact": "Cookie semantics update — no intersection with QUERY method.",
+      "impact": "Cookie semantics update \u2014 no intersection with QUERY method.",
       "_triage": "2026-08-29: dismissed. Cookie state management is unrelated to QUERY safe/idempotent/cacheable semantics."
     },
     {
       "id": "draft-ietf-httpbis-secondary-server-certs",
       "label": "Secondary Certificate Authentication of HTTP Servers",
       "status": "not-applicable",
-      "impact": "TLS secondary certificate authentication — no intersection with QUERY method semantics.",
+      "impact": "TLS secondary certificate authentication \u2014 no intersection with QUERY method semantics.",
       "_triage": "2026-08-29: dismissed. TLS-layer authentication is orthogonal to QUERY."
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-13",
+      "name": "draft-ietf-httpbis-connect-tcp-13",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search-09",
+      "name": "draft-ietf-httpbis-no-vary-search-09",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-03",
+      "name": "draft-rajappa-httpbis-connection-contamination-03",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-04",
+      "name": "draft-rajappa-httpbis-connection-contamination-04",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-05",
+      "name": "draft-rajappa-httpbis-connection-contamination-05",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-rosomakho-httpbis-h3-unbound-data-02",
+      "name": "draft-rosomakho-httpbis-h3-unbound-data-02",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -216,7 +252,7 @@
         "id": "nodejs",
         "name": "Node.js (http module)",
         "status": "shipped",
-        "notes": "Node.js http module has parsed QUERY natively since early 2024 — the http parser does not restrict allowed method names. No special handling needed. Separate undici issue #5454 tracks explicit QUERY support in undici's fetch implementation.",
+        "notes": "Node.js http module has parsed QUERY natively since early 2024 \u2014 the http parser does not restrict allowed method names. No special handling needed. Separate undici issue #5454 tracks explicit QUERY support in undici's fetch implementation.",
         "issue_url": "https://github.com/nodejs/undici/issues/5454"
       }
     ],
@@ -225,7 +261,7 @@
         "id": "aspnet-dotnet10",
         "name": "ASP.NET Core / .NET 10",
         "status": "shipped",
-        "notes": "Ships HttpMethods.Query constant, MapMethods(), and [AcceptVerbs] support in .NET 10. ASP.NET Core recognizes QUERY in .NET 11 previews as well. Explicit first-class support — no workarounds needed.",
+        "notes": "Ships HttpMethods.Query constant, MapMethods(), and [AcceptVerbs] support in .NET 10. ASP.NET Core recognizes QUERY in .NET 11 previews as well. Explicit first-class support \u2014 no workarounds needed.",
         "ref": "https://vensas.de/en/blog/http-query-method-dotnet-10"
       },
       {
@@ -240,7 +276,7 @@
         "name": "Spring Framework MVC",
         "status": "not-planned",
         "issue_url": "https://github.com/spring-projects/spring-framework/issues/36988",
-        "workaround": "@RequestMapping(method = RequestMethod.valueOf(\"QUERY\")) — Spring-team-confirmed workaround. RestClient.create().method(HttpMethod.valueOf(\"QUERY\")) on client side.",
+        "workaround": "@RequestMapping(method = RequestMethod.valueOf(\"QUERY\")) \u2014 Spring-team-confirmed workaround. RestClient.create().method(HttpMethod.valueOf(\"QUERY\")) on client side.",
         "notes": "Issue #36988 closed as not-planned/duplicate. @QueryMapping annotation cannot be added because Spring GraphQL already claims that name. The RequestMethod.valueOf workaround is stable and already used in this demo. A separate PR #34993 was filed by the Tomcat contributor but is not actively progressing."
       },
       {
@@ -248,7 +284,7 @@
         "name": "Fastify",
         "status": "pr-open",
         "issue_url": "https://github.com/fastify/fastify/issues/6807",
-        "notes": "Issue #6807 proposes first-class QUERY support: fastify.query() shorthand, route registration with method:'QUERY', body parsing, schema validation, and lifecycle hooks. Not shipped — workaround: fastify.route({method:'QUERY', ...}) works today."
+        "notes": "Issue #6807 proposes first-class QUERY support: fastify.query() shorthand, route registration with method:'QUERY', body parsing, schema validation, and lifecycle hooks. Not shipped \u2014 workaround: fastify.route({method:'QUERY', ...}) works today."
       },
       {
         "id": "express",
@@ -274,7 +310,7 @@
         "id": "cloudflare-workers",
         "name": "Cloudflare Workers / workerd",
         "status": "issue-open",
-        "notes": "Issue open for body-keyed QUERY caching in Cloudflare's edge runtime. RFC 10008 was co-authored by Cloudflare engineers — production support expected but no ship date announced."
+        "notes": "Issue open for body-keyed QUERY caching in Cloudflare's edge runtime. RFC 10008 was co-authored by Cloudflare engineers \u2014 production support expected but no ship date announced."
       },
       {
         "id": "varnish",
@@ -310,14 +346,14 @@
         "name": "WHATWG Fetch Standard",
         "status": "issue-open",
         "issue_url": "https://github.com/whatwg/fetch/issues/1938",
-        "notes": "Issue #1938 (opened June 30, 2026) covers three integration points: (1) Method normalization — add QUERY to 'normalize a method' so fetch({method:'query'}) sends uppercase QUERY, not lowercase. (2) CORS — QUERY is not CORS-safelisted; cross-origin always triggers preflight. RFC 10008 §4 explicitly expects this. (3) Caching — body-keyed cache key is architecturally novel for browsers; Fetch's HTTP-cache model is URL-keyed. Whether Fetch should reflect body-keyed caching or leave it to the HTTP layer is unresolved."
+        "notes": "Issue #1938 (opened June 30, 2026) covers three integration points: (1) Method normalization \u2014 add QUERY to 'normalize a method' so fetch({method:'query'}) sends uppercase QUERY, not lowercase. (2) CORS \u2014 QUERY is not CORS-safelisted; cross-origin always triggers preflight. RFC 10008 \u00a74 explicitly expects this. (3) Caching \u2014 body-keyed cache key is architecturally novel for browsers; Fetch's HTTP-cache model is URL-keyed. Whether Fetch should reflect body-keyed caching or leave it to the HTTP layer is unresolved."
       },
       {
         "id": "mozilla-firefox",
         "name": "Mozilla Firefox",
         "status": "position-pending",
         "issue_url": "https://github.com/mozilla/standards-positions/issues/1430",
-        "notes": "standards-positions #1430 opened July 2026. Mozilla has not published a position. Not requesting immediate ship — seeking position to guide WHATWG Fetch/HTML work."
+        "notes": "standards-positions #1430 opened July 2026. Mozilla has not published a position. Not requesting immediate ship \u2014 seeking position to guide WHATWG Fetch/HTML work."
       },
       {
         "id": "webkit-safari",
@@ -330,12 +366,12 @@
         "id": "chromium-chrome",
         "name": "Chromium / Chrome",
         "status": "no-public-signal",
-        "notes": "No public Chrome Platform Status entry or Intent to Prototype as of 2026-08-29. Chromium's HTTP cache does not cache QUERY responses — repeated identical QUERY requests bypass the cache. Waiting on WHATWG Fetch #1938 and browser vendor positions to drive implementation."
+        "notes": "No public Chrome Platform Status entry or Intent to Prototype as of 2026-08-29. Chromium's HTTP cache does not cache QUERY responses \u2014 repeated identical QUERY requests bypass the cache. Waiting on WHATWG Fetch #1938 and browser vendor positions to drive implementation."
       }
     ]
   },
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-27"
+  "last_checked": "2026-08-29"
 }
