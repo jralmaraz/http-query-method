@@ -220,6 +220,12 @@
       "name": "draft-rosomakho-httpbis-h3-unbound-data-02",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-rajappa-httpbis-connection-contamination-06",
+      "name": "draft-rajappa-httpbis-connection-contamination-06",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -373,5 +379,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-29"
+  "last_checked": "2026-08-30"
 }
