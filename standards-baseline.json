@@ -226,6 +226,12 @@
       "name": "draft-rajappa-httpbis-connection-contamination-06",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-rosomakho-httpbis-outdated-proxy-config",
+      "name": "draft-rosomakho-httpbis-outdated-proxy-config",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -379,5 +385,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-08-30"
+  "last_checked": "2026-09-03"
 }
