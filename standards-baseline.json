@@ -244,6 +244,12 @@
       "name": "draft-ietf-httpbis-pre-denied-01",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-hardt-httpbis-signature-key-09",
+      "name": "draft-hardt-httpbis-signature-key-09",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -397,5 +403,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-09-09"
+  "last_checked": "2026-09-14"
 }
