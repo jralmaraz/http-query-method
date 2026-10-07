@@ -256,6 +256,24 @@
       "name": "draft-ietf-httpbis-connect-tcp-14",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search-10",
+      "name": "draft-ietf-httpbis-no-vary-search-10",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-resumable-upload",
+      "name": "draft-ietf-httpbis-resumable-upload",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-resumable-upload-13",
+      "name": "draft-ietf-httpbis-resumable-upload-13",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -409,5 +427,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-09-18"
+  "last_checked": "2026-10-07"
 }
