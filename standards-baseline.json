@@ -286,6 +286,12 @@
       "name": "draft-spk-httpbis-parallel-upload-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-15",
+      "name": "draft-ietf-httpbis-connect-tcp-15",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -439,5 +445,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-11"
+  "last_checked": "2026-10-14"
 }
