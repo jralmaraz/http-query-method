@@ -292,6 +292,12 @@
       "name": "draft-ietf-httpbis-connect-tcp-15",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-16",
+      "name": "draft-ietf-httpbis-connect-tcp-16",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -445,5 +451,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-14"
+  "last_checked": "2026-10-16"
 }
