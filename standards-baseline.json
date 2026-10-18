@@ -298,6 +298,18 @@
       "name": "draft-ietf-httpbis-connect-tcp-16",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-nottingham-httpbis-402",
+      "name": "draft-nottingham-httpbis-402",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-nottingham-httpbis-402-00",
+      "name": "draft-nottingham-httpbis-402-00",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -451,5 +463,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-16"
+  "last_checked": "2026-10-18"
 }
