@@ -310,6 +310,12 @@
       "name": "draft-nottingham-httpbis-402-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-resumable-upload-14",
+      "name": "draft-ietf-httpbis-resumable-upload-14",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -463,5 +469,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-18"
+  "last_checked": "2026-10-19"
 }
