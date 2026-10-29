@@ -340,6 +340,18 @@
       "name": "draft-rosomakho-httpbis-tunnels-signatures-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-spk-httpbis-client-groups",
+      "name": "draft-spk-httpbis-client-groups",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-spk-httpbis-client-groups-00",
+      "name": "draft-spk-httpbis-client-groups-00",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -493,5 +505,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-22"
+  "last_checked": "2026-10-29"
 }
