@@ -352,6 +352,12 @@
       "name": "draft-spk-httpbis-client-groups-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-17",
+      "name": "draft-ietf-httpbis-connect-tcp-17",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -505,5 +511,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-10-29"
+  "last_checked": "2026-10-30"
 }
