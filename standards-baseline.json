@@ -382,6 +382,66 @@
       "name": "draft-thomson-httpbis-chic-01",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-chatzis-httpbis-required-rate",
+      "name": "draft-chatzis-httpbis-required-rate",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-chatzis-httpbis-required-rate-00",
+      "name": "draft-chatzis-httpbis-required-rate-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-connect-tcp-18",
+      "name": "draft-ietf-httpbis-connect-tcp-18",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-secondary-server-certs-03",
+      "name": "draft-ietf-httpbis-secondary-server-certs-03",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-http",
+      "name": "draft-toomim-httpbis-braid-http",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-http-05",
+      "name": "draft-toomim-httpbis-braid-http-05",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-merge-types",
+      "name": "draft-toomim-httpbis-braid-merge-types",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-merge-types-00",
+      "name": "draft-toomim-httpbis-braid-merge-types-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-multiresponse",
+      "name": "draft-toomim-httpbis-braid-multiresponse",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-multiresponse-00",
+      "name": "draft-toomim-httpbis-braid-multiresponse-00",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -535,5 +595,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-02"
+  "last_checked": "2026-11-03"
 }
