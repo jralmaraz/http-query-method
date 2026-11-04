@@ -442,6 +442,66 @@
       "name": "draft-toomim-httpbis-braid-multiresponse-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-poll-and-push",
+      "name": "draft-toomim-httpbis-braid-poll-and-push",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-poll-and-push-00",
+      "name": "draft-toomim-httpbis-braid-poll-and-push-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-subscriptions",
+      "name": "draft-toomim-httpbis-braid-subscriptions",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-subscriptions-00",
+      "name": "draft-toomim-httpbis-braid-subscriptions-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-subscriptions-caching",
+      "name": "draft-toomim-httpbis-braid-subscriptions-caching",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-subscriptions-caching-00",
+      "name": "draft-toomim-httpbis-braid-subscriptions-caching-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-updates",
+      "name": "draft-toomim-httpbis-braid-updates",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-updates-00",
+      "name": "draft-toomim-httpbis-braid-updates-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-versions",
+      "name": "draft-toomim-httpbis-braid-versions",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-braid-versions-00",
+      "name": "draft-toomim-httpbis-braid-versions-00",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -595,5 +655,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-03"
+  "last_checked": "2026-11-04"
 }
