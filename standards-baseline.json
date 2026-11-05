@@ -502,6 +502,30 @@
       "name": "draft-toomim-httpbis-braid-versions-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-merge-types",
+      "name": "draft-toomim-httpbis-merge-types",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-simpler-fields",
+      "name": "draft-toomim-httpbis-simpler-fields",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-simpler-fields-00",
+      "name": "draft-toomim-httpbis-simpler-fields-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-toomim-httpbis-versions",
+      "name": "draft-toomim-httpbis-versions",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -655,5 +679,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-04"
+  "last_checked": "2026-11-05"
 }
