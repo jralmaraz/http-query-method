@@ -526,6 +526,18 @@
       "name": "draft-toomim-httpbis-versions",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-banffy-httpbis-not-a-freezer",
+      "name": "draft-banffy-httpbis-not-a-freezer",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-banffy-httpbis-not-a-freezer-00",
+      "name": "draft-banffy-httpbis-not-a-freezer-00",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -679,5 +691,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-05"
+  "last_checked": "2026-11-15"
 }
