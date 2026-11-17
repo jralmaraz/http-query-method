@@ -538,6 +538,12 @@
       "name": "draft-banffy-httpbis-not-a-freezer-00",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-ietf-httpbis-no-vary-search-11",
+      "name": "draft-ietf-httpbis-no-vary-search-11",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -691,5 +697,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-15"
+  "last_checked": "2026-11-17"
 }
