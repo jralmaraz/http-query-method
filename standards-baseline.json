@@ -544,6 +544,24 @@
       "name": "draft-ietf-httpbis-no-vary-search-11",
       "type": "draft",
       "status": "discovered"
+    },
+    {
+      "id": "draft-enger-httpbis-http4-wiqc",
+      "name": "draft-enger-httpbis-http4-wiqc",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-enger-httpbis-http4-wiqc-00",
+      "name": "draft-enger-httpbis-http4-wiqc-00",
+      "type": "draft",
+      "status": "discovered"
+    },
+    {
+      "id": "draft-spk-httpbis-parallel-upload-01",
+      "name": "draft-spk-httpbis-parallel-upload-01",
+      "type": "draft",
+      "status": "discovered"
     }
   ],
   "ecosystem_adoption": {
@@ -697,5 +715,5 @@
   "wg_feeds": [
     "https://datatracker.ietf.org/group/httpbis/documents/feed/"
   ],
-  "last_checked": "2026-11-17"
+  "last_checked": "2026-11-19"
 }
